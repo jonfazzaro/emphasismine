@@ -1,11 +1,8 @@
-const dotenv = require("dotenv");
 const tumblr = require("tumblr.js");
 
 module.exports = { 
     edit: (options) => call(client.editPost, options) 
 };
-
-dotenv.config();
 
 const client = tumblr.createClient({
   consumer_key: process.env.tumblrConsumerKey,

@@ -10,7 +10,6 @@
   "dependencies": {
     "browser": "^0.2.6",
     "cheerio": "^1.0.0-rc.10",
-    "dotenv": "^16.0.0",
     "tumblr.js": "^3.0.0"
   },
   "devDependencies": {
