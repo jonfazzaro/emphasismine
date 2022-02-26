@@ -21,13 +21,39 @@ describe("The emphasis mine function", () => {
   });
 
   describe("given a card", () => {
-    it("creates a link post", async () => {
-      arrangeCard({ name: "Bobby" });
+    describe("with no URL attachment", () => {
+      it("creates a text post", async () => {
+        arrangeCard({
+          name: "Let me take you down",
+          desc: "I'm going to Strawberry Fields. #nothingisreal #gethungabout  ",
+          attachments: [],
+        });
+        await run();
+        expect(tumblr.post).toHaveBeenCalledWith({
+          title: "Let me take you down",
+          description: "I'm going to Strawberry Fields.",
+          url: null,
+          type: "text",
+          tags: "emphasismine,nothingisreal,gethungabout"
+        });
+      });
+    });
+
+    it.skip("creates a link post", async () => {
+      arrangeCard({
+        name: "There is a barber showing photographs #everyhead",
+        attachments: [{url: "http://penny.lane"}],
+      });
       await run();
-      expect(tumblr.post).toHaveBeenCalled();
+      expect(tumblr.post).toHaveBeenCalledWith({
+        title: "There is a barber showing photographs",
+        description: null,
+        url: "http://penny.lane",
+        type: "link",
+        tags: "emphasismine,everyhead"
+      });
     });
   });
-
 });
 
 function arrangeCard(card) {
@@ -48,5 +74,5 @@ const _mocked = {
   timer: { isPastDue: false },
   trello: {
     getNextCard: jest.fn(() => Promise.resolve(null)),
-  }
+  },
 };
