@@ -5,7 +5,8 @@
   "scripts": {
     "start": "func start",
     "test": "npx jest",
-    "tdd": "npx jest --watchAll"
+    "tdd": "npx jest --watchAll",
+    "tcr": "npx nodemon -e js -x \"npx jest && git add -A && git commit -m 'wip'\""
   },
   "dependencies": {
     "browser": "^0.2.6",
