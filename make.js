@@ -7,9 +7,9 @@ main();
 async function main() {
 
     
-    const cards = await trello.getCards();
+    const card = await trello.getNextCard();
     
-    console.log("Cards: ", await cards.json());
+    console.log("Card: ", card);
     
 }
 
