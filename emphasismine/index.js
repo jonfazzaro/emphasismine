@@ -5,10 +5,20 @@ module.exports = async function (context) {
   const card = await trello.getNextCard();
   if (!card) return;
 
-  // const url = card.attachments[0]?.url || null;
-
-  await tumblr.post(textPost(card));
+  card.url = card.attachments[0]?.url || null;
+  const createPost = card.url ? linkPost : textPost;
+  await tumblr.post(createPost(card));
 };
+
+function linkPost(card) {
+  return {
+    title: card.name,
+    description: description(card),
+    url: card.url,
+    type: "link",
+    tags: tags(card).join(","),
+  };
+}
 
 function textPost(card) {
   return {
@@ -16,17 +26,18 @@ function textPost(card) {
     description: description(card),
     url: null,
     type: "text",
-    tags: tags(card).join(",")
+    tags: tags(card).join(","),
   };
 }
 
 function description(card) {
-    return card.desc.replace(hashtags, "").trim();
+  return card.desc.replace(hashtags, "").trim();
 }
 
 function tags(card) {
-    return ["emphasismine"].concat(
-        [...card.desc.matchAll(hashtags)].map(m => m[2]));
+  return ["emphasismine"].concat(
+    [...card.desc.matchAll(hashtags)].map(m => m[2])
+  );
 }
 
 const hashtags = /(\s|\A)#(\w+)/g;

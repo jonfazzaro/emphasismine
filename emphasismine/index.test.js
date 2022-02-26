@@ -39,18 +39,19 @@ describe("The emphasis mine function", () => {
       });
     });
 
-    it.skip("creates a link post", async () => {
+    it("creates a link post", async () => {
       arrangeCard({
-        name: "There is a barber showing photographs #everyhead",
+        name: "There is a barber showing photographs",
+        desc: "Of every head he's had the pleasure to know #come #go",
         attachments: [{url: "http://penny.lane"}],
       });
       await run();
       expect(tumblr.post).toHaveBeenCalledWith({
         title: "There is a barber showing photographs",
-        description: null,
+        description: "Of every head he's had the pleasure to know",
         url: "http://penny.lane",
         type: "link",
-        tags: "emphasismine,everyhead"
+        tags: "emphasismine,come,go"
       });
     });
   });
