@@ -26,8 +26,7 @@ function trello(context) {
     const cards = await get(
       `https://api.trello.com/1/lists/${process.env.trelloListID}/cards`
     );
-    if (!cards.length)
-        return null;
+    if (!cards.length) return null;
 
     const top = cards[0];
     top.attachments = await getAttachments(top.id);

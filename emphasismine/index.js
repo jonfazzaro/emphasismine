@@ -1,9 +1,12 @@
-module.exports = async function (context, myTimer) {
-    var timeStamp = new Date().toISOString();
+
+module.exports = async function (context) {
+    const trello = require("./trello")(context);
+    const tumblr = require("./tumblr");
     
-    if (myTimer.isPastDue)
-    {
-        context.log('JavaScript is running late!');
-    }
-    context.log('JavaScript timer trigger function ran!', timeStamp);   
+    const card = await trello.getNextCard();
+    if (!card)
+        return; 
+
+    await tumblr.post({title: card.name});
+
 };
