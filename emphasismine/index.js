@@ -4,11 +4,14 @@ module.exports = async function (context) {
   const tumblr = require("./tumblr");
 
   const card = await trello.getNextCard();
-  if (shouldPost(card)) await postFrom(card);
+  if (card) {
+    if (!isReadReminder(card)) 
+      await postFrom(card);
+  }
   else await remindMeToRead();
 
-  function shouldPost(card) {
-    return card && card.name != readReminder;
+  function isReadReminder(card) {
+    return card.name == readReminder;
   }
 
   async function remindMeToRead() {
@@ -16,10 +19,14 @@ module.exports = async function (context) {
   }
 
   async function postFrom(card) {
-    card.url = card.attachments[0]?.url || null;
+    card.url = attachedUrl(card);
     const createPost = card.url ? linkPost : textPost;
     await tumblr.post(await createPost(card));
     await trello.archive(card);
+  }
+
+  function attachedUrl(card) {
+    return card.attachments[0]?.url || null;
   }
 
   async function linkPost(card) {

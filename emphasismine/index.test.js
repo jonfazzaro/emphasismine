@@ -20,9 +20,8 @@ describe("The emphasis mine function", () => {
     });
 
     it("creates a card to remind me to read something interesting", () => {
-      expect(_mocked.trello.createCard).toHaveBeenCalledWith(
-        "Read: something interesting"
-      );
+      expect(_mocked.trello.createCard)
+        .toHaveBeenCalledWith(readReminder);
     });
   });
 
@@ -77,13 +76,19 @@ describe("The emphasis mine function", () => {
 
     describe("that is a reminder to read", () => {
       beforeEach(async () => {
+        _mocked.trello.createCard.mockClear();
         arrangeCard({ name: "Read: something interesting" });
         await run();
       });
-        
+
       it("does not post anything", () => {
         expect(tumblr.post).not.toHaveBeenCalled();
       });
+
+      it('does not add another read reminder card', () => {
+        expect(_mocked.trello.createCard).not.toHaveBeenCalled();
+      });
+        
     });
   });
 });
@@ -111,3 +116,5 @@ const _mocked = {
     archive: jest.fn(() => Promise.resolve(null)),
   },
 };
+
+const readReminder = "Read: something interesting";
