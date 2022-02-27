@@ -15,6 +15,7 @@ module.exports = async function (context) {
     card.url = card.attachments[0]?.url || null;
     const createPost = card.url ? linkPost : textPost;
     await tumblr.post(await createPost(card));
+    await trello.archive(card);
   }
 
   async function linkPost(card) {

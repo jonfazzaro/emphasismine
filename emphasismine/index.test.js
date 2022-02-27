@@ -19,9 +19,10 @@ describe("The emphasis mine function", () => {
       expect(tumblr.post).not.toHaveBeenCalled();
     });
 
-    it('creates a card to remind me to read something interesting', () => {
-      expect(_mocked.trello.createCard)
-        .toHaveBeenCalledWith("Read: something interesting"); 
+    it("creates a card to remind me to read something interesting", () => {
+      expect(_mocked.trello.createCard).toHaveBeenCalledWith(
+        "Read: something interesting"
+      );
     });
   });
 
@@ -29,17 +30,18 @@ describe("The emphasis mine function", () => {
     beforeEach(() => {
       metadata.fetch = jest.fn(url => {
         return Promise.resolve({
-          image: "https://beatles.pics/ringo"
+          image: "https://beatles.pics/ringo",
         });
       });
     });
 
     it("creates a link post", async () => {
-      arrangeCard({
+      const card = {
         name: "There is a barber showing photographs",
         desc: "Of every head he's had the pleasure to know #come #go",
         attachments: [{ url: "http://penny.lane" }],
-      });
+      };
+      arrangeCard(card);
       await run();
       expect(metadata.fetch).toHaveBeenCalledWith("http://penny.lane");
       expect(tumblr.post).toHaveBeenCalledWith({
@@ -48,17 +50,19 @@ describe("The emphasis mine function", () => {
         url: "http://penny.lane",
         type: "link",
         tags: "emphasismine,come,go",
-        thumbnail: "https://beatles.pics/ringo"
+        thumbnail: "https://beatles.pics/ringo",
       });
+      expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
     });
 
     describe("with no URL attachment", () => {
       it("creates a text post", async () => {
-        arrangeCard({
+        const card = {
           name: "Let me take you down",
           desc: "I'm going to Strawberry Fields. #nothingisreal #gethungabout  ",
           attachments: [],
-        });
+        };
+        arrangeCard(card);
         await run();
         expect(tumblr.post).toHaveBeenCalledWith({
           title: "Let me take you down",
@@ -67,9 +71,9 @@ describe("The emphasis mine function", () => {
           type: "text",
           tags: "emphasismine,nothingisreal,gethungabout",
         });
+        expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
       });
     });
-
   });
 });
 
@@ -92,6 +96,7 @@ const _mocked = {
   timer: { isPastDue: false },
   trello: {
     getNextCard: jest.fn(() => Promise.resolve(null)),
-    createCard: jest.fn(() => Promise.resolve(null))
+    createCard: jest.fn(() => Promise.resolve(null)),
+    archive: jest.fn(() => Promise.resolve(null)),
   },
 };

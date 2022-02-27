@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 
 function trello(context) {
-  return { createCard, getNextCard, archiveCard };
+  return { createCard, getNextCard, archive };
 
   async function createCard(name, desc, due) {
     return await post("https://api.trello.com/1/cards", {
@@ -12,7 +12,8 @@ function trello(context) {
     });
   }
 
-  async function archiveCard(cardId) {
+  async function archive(card) {
+    const cardId = card?.id;
     return await put(`https://api.trello.com/1/cards/${cardId}`, {
       closed: true,
     });
