@@ -6,14 +6,17 @@
     "start": "func start",
     "test": "npx jest",
     "tdd": "npx jest --watchAll",
-    "tcr": "npx nodemon -e js -x \"npx jest && git add -A && git commit -m 'wip'\""
+    "tcr": "npx nodemon -e js -x \"npx jest && git add -A && git commit -m 'wip'\"",
+    "make": "node make.js"
   },
   "dependencies": {
     "browser": "^0.2.6",
     "cheerio": "^1.0.0-rc.10",
+    "node-fetch": "^2.6.1",
     "tumblr.js": "^3.0.0"
   },
   "devDependencies": {
+    "dotenv": "^16.0.0",
     "jest": "^27.5.1"
   }
 }

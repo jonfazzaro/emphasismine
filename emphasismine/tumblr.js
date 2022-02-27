@@ -1,7 +1,8 @@
 const tumblr = require("tumblr.js");
 
 module.exports = { 
-    edit: (options) => call(client.editPost, options) 
+    edit: (options) => call(client.editPost, options),
+    post: (options) => call(client.createLinkPost, { ...options, state: process.env.postState}),
 };
 
 const client = tumblr.createClient({
