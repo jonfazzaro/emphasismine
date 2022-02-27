@@ -1,8 +1,16 @@
 const tumblr = require("tumblr.js");
 
 module.exports = { 
-    edit: (options) => call(client.editPost, options),
-    post: (options) => call(client.createLinkPost, { ...options, state: process.env.postState}),
+    post: (options) => {
+        const fn = {
+            "text": "createTextPost",
+            "link": "createLinkPost",
+        }[options.type];
+        return call(fn, { 
+            ...options, state: 
+            process.env.postState
+        });
+    }
 };
 
 const client = tumblr.createClient({
@@ -14,7 +22,7 @@ const client = tumblr.createClient({
 
 function call(method, options) {
     return new Promise((resolve, reject) => {
-        method(process.env.blogname, options, (e, data) => {
+        client[method](process.env.tumblrBlogname, options, (e, data) => {
             if (e) reject(e);
             resolve(data);
         })
