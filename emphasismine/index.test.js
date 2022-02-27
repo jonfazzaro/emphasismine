@@ -21,7 +21,11 @@ describe("The emphasis mine function", () => {
 
     it("creates a card to remind me to read something interesting", () => {
       expect(_mocked.trello.createCard)
-        .toHaveBeenCalledWith(readReminder);
+        .toHaveBeenCalledWith(readReminder, null, null, 
+          [
+            _mocked.trello.labels.deliverValueContinuously, 
+            _mocked.trello.labels.experimentAndLearnRapidly
+          ]);
     });
   });
 
@@ -85,10 +89,9 @@ describe("The emphasis mine function", () => {
         expect(tumblr.post).not.toHaveBeenCalled();
       });
 
-      it('does not add another read reminder card', () => {
+      it("does not add another read reminder card", () => {
         expect(_mocked.trello.createCard).not.toHaveBeenCalled();
       });
-        
     });
   });
 });
@@ -114,6 +117,12 @@ const _mocked = {
     getNextCard: jest.fn(() => Promise.resolve(null)),
     createCard: jest.fn(() => Promise.resolve(null)),
     archive: jest.fn(() => Promise.resolve(null)),
+    labels: {
+      deliverValueContinuously: "5cca03c6af45832d134e2bce",
+      experimentAndLearnRapidly: "5cca03e5112dde45f0813208",
+      makeSafetyAPrerequisite: "5cca03d8ffff90513f348518",
+      makePeopleAwesome: "5cca03bbda292567444b6024",
+    },
   },
 };
 

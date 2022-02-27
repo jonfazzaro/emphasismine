@@ -15,7 +15,11 @@ module.exports = async function (context) {
   }
 
   async function remindMeToRead() {
-    await trello.createCard(readReminder);
+    await trello.createCard(readReminder, null, null, 
+      [
+        trello.labels.deliverValueContinuously, 
+        trello.labels.experimentAndLearnRapidly
+      ]);
   }
 
   async function postFrom(card) {
