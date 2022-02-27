@@ -1,14 +1,16 @@
 const fetch = require("node-fetch");
 
 function trello(context) {
-  return { createCard, getNextCard, archive };
+  return { createCard, getNextCard, archive, labels };
 
-  async function createCard(name, desc, due) {
+  async function createCard(name, desc, due, labels) {
+    console.log(labels);
     return await post("https://api.trello.com/1/cards", {
       idList: process.env.trelloListID,
       name: name,
       desc: desc,
       due: due,
+      idLabels: labels || []
     });
   }
 
@@ -66,3 +68,10 @@ function trello(context) {
 }
 
 module.exports = trello;
+
+const labels = {
+  deliverValueContinuously: "5cca03c6af45832d134e2bce",
+  experimentAndLearnRapidly: "5cca03e5112dde45f0813208",
+  makeSafetyAPrerequisite: "5cca03d8ffff90513f348518",
+  makePeopleAwesome: "5cca03bbda292567444b6024"
+}
