@@ -19,7 +19,10 @@ describe("The emphasis mine function", () => {
       expect(tumblr.post).not.toHaveBeenCalled();
     });
 
-    // TODO: create a card: "Read something interesting"
+    it('creates a card to remind me to read something interesting', () => {
+      expect(_mocked.trello.createCard)
+        .toHaveBeenCalledWith("Read: something interesting"); 
+    });
   });
 
   describe("given a card", () => {
@@ -89,5 +92,6 @@ const _mocked = {
   timer: { isPastDue: false },
   trello: {
     getNextCard: jest.fn(() => Promise.resolve(null)),
+    createCard: jest.fn(() => Promise.resolve(null))
   },
 };
