@@ -20,8 +20,8 @@ module.exports = async function (context) {
 
   async function postFrom(card) {
     card.url = attachedUrl(card);
-    const createPost = card.url ? linkPost : textPost;
-    await tumblr.post(await createPost(card));
+    const method = !!card.url ? linkPost : textPost;
+    await tumblr.post(await method(card));
     await trello.archive(card);
   }
 
@@ -44,7 +44,7 @@ module.exports = async function (context) {
   function textPost(card) {
     return {
       title: card.name,
-      description: description(card),
+      body: description(card),
       url: null,
       type: "text",
       tags: tags(card).join(","),

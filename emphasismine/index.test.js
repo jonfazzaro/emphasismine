@@ -65,7 +65,7 @@ describe("The emphasis mine function", () => {
         await run();
         expect(tumblr.post).toHaveBeenCalledWith({
           title: "Let me take you down",
-          description: "I'm going to Strawberry Fields.",
+          body: "I'm going to Strawberry Fields.",
           url: null,
           type: "text",
           tags: "emphasismine,nothingisreal,gethungabout",
