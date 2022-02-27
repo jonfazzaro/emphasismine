@@ -4,11 +4,15 @@ module.exports = async function (context) {
   const tumblr = require("./tumblr");
 
   const card = await trello.getNextCard();
-  if (card) await postFrom(card);
+  if (shouldPost(card)) await postFrom(card);
   else await remindMeToRead();
 
+  function shouldPost(card) {
+    return card && card.name != readReminder;
+  }
+
   async function remindMeToRead() {
-    await trello.createCard("Read: something interesting");
+    await trello.createCard(readReminder);
   }
 
   async function postFrom(card) {
@@ -52,3 +56,4 @@ module.exports = async function (context) {
 };
 
 const hashtags = /(\s|\A)#(\w+)/g;
+const readReminder = "Read: something interesting";

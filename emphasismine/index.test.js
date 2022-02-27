@@ -74,6 +74,17 @@ describe("The emphasis mine function", () => {
         expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
       });
     });
+
+    describe("that is a reminder to read", () => {
+      beforeEach(async () => {
+        arrangeCard({ name: "Read: something interesting" });
+        await run();
+      });
+        
+      it("does not post anything", () => {
+        expect(tumblr.post).not.toHaveBeenCalled();
+      });
+    });
   });
 });
 
