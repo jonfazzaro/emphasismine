@@ -1,22 +1,26 @@
+const metadata = require("./openGraph");
+const tumblr = require("./tumblr");
+
 module.exports = async function (context) {
   const trello = require("./trello")(context);
-  const tumblr = require("./tumblr");
 
   const card = await trello.getNextCard();
   if (!card) return;
 
   card.url = card.attachments[0]?.url || null;
   const createPost = card.url ? linkPost : textPost;
-  await tumblr.post(createPost(card));
+  await tumblr.post(await createPost(card));
 };
 
-function linkPost(card) {
+async function linkPost(card) {
+  const meta = await metadata.fetch(card.url);
   return {
     title: card.name,
     description: description(card),
     url: card.url,
     type: "link",
     tags: tags(card).join(","),
+    thumbnail: meta.image
   };
 }
 

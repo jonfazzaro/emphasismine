@@ -1,5 +1,7 @@
 const trello = require("./trello");
 const tumblr = require("./tumblr");
+const metadata = require("./openGraph");
+
 const subject = require("./index");
 
 describe("The emphasis mine function", () => {
@@ -21,6 +23,32 @@ describe("The emphasis mine function", () => {
   });
 
   describe("given a card", () => {
+    beforeEach(() => {
+      metadata.fetch = jest.fn(url => {
+        return Promise.resolve({
+          image: "https://beatles.pics/ringo"
+        });
+      });
+    });
+
+    it("creates a link post", async () => {
+      arrangeCard({
+        name: "There is a barber showing photographs",
+        desc: "Of every head he's had the pleasure to know #come #go",
+        attachments: [{ url: "http://penny.lane" }],
+      });
+      await run();
+      expect(metadata.fetch).toHaveBeenCalledWith("http://penny.lane");
+      expect(tumblr.post).toHaveBeenCalledWith({
+        title: "There is a barber showing photographs",
+        description: "Of every head he's had the pleasure to know",
+        url: "http://penny.lane",
+        type: "link",
+        tags: "emphasismine,come,go",
+        thumbnail: "https://beatles.pics/ringo"
+      });
+    });
+
     describe("with no URL attachment", () => {
       it("creates a text post", async () => {
         arrangeCard({
@@ -34,26 +62,11 @@ describe("The emphasis mine function", () => {
           description: "I'm going to Strawberry Fields.",
           url: null,
           type: "text",
-          tags: "emphasismine,nothingisreal,gethungabout"
+          tags: "emphasismine,nothingisreal,gethungabout",
         });
       });
     });
 
-    it("creates a link post", async () => {
-      arrangeCard({
-        name: "There is a barber showing photographs",
-        desc: "Of every head he's had the pleasure to know #come #go",
-        attachments: [{url: "http://penny.lane"}],
-      });
-      await run();
-      expect(tumblr.post).toHaveBeenCalledWith({
-        title: "There is a barber showing photographs",
-        description: "Of every head he's had the pleasure to know",
-        url: "http://penny.lane",
-        type: "link",
-        tags: "emphasismine,come,go"
-      });
-    });
   });
 });
 
@@ -67,6 +80,7 @@ async function run() {
 
 jest.mock("./trello");
 jest.mock("./tumblr");
+jest.mock("./openGraph");
 
 const _mocked = {
   context: {
