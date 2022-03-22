@@ -8,7 +8,7 @@ describe("The share filter", () => {
 
   it("removes the top of the link post", () => {
     post(
-      `Amazon.com. Spend less. Smile more.\n\nbuy\n\nthings`,
+      `\nbuy\n\nthings`,
       "https://www.amazon.com",
       "buy buy,emphasismine,get back"
     );
@@ -20,7 +20,7 @@ describe("The share filter", () => {
 
 const Twitter = { postNewTweet: { setTweet: jest.fn() } };
 
-function post(body, url, tags) {
+function post(body: string, url: string, tags: string) {
   share(tumblr({ body, url, tags }), Twitter);
 }
 
@@ -28,7 +28,7 @@ function tumblr({ body, url, tags }) {
   return {
     newLinkPost: {
       PostBodyHtml: body,
-      LinkUrl: `https://wrapper.url?z=${encodeURIComponent(url)}`,
+      LinkUrl: url,
       PostTags: tags,
     },
   };

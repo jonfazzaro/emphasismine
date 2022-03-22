@@ -2,8 +2,8 @@ module.exports = function share(Tumblr:any, Twitter:any) {
   Twitter.postNewTweet.setTweet(content());
 
   function content() {
-    const body = main(Tumblr.newLinkPost.PostBodyHtml);
-    const link = unwrap(Tumblr.newLinkPost.LinkUrl);
+    const body = Tumblr.newLinkPost.PostBodyHtml;
+    const link = Tumblr.newLinkPost.LinkUrl;
     const tags = hash(Tumblr.newLinkPost.PostTags);
 
     return `${body}\n\n${link} ${tags}`.trim();
