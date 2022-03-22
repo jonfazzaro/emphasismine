@@ -1,3 +1,7 @@
+jest.mock("./trello"); 
+jest.mock("./tumblr");
+jest.mock("./openGraph");
+
 const trello = require("./trello");
 const tumblr = require("./tumblr");
 const metadata = require("./openGraph");
@@ -104,10 +108,6 @@ async function run() {
   await subject(_mocked.context, _mocked.timer);
 }
 
-jest.mock("./trello");
-jest.mock("./tumblr");
-jest.mock("./openGraph");
-
 const _mocked = {
   context: {
     log: jest.fn(),
@@ -117,6 +117,7 @@ const _mocked = {
     getNextCard: jest.fn(() => Promise.resolve(null)),
     createCard: jest.fn(() => Promise.resolve(null)),
     archive: jest.fn(() => Promise.resolve(null)),
+    itsAMock: true,
     labels: {
       deliverValueContinuously: "5cca03c6af45832d134e2bce",
       experimentAndLearnRapidly: "5cca03e5112dde45f0813208",
