@@ -14,7 +14,7 @@ describe("The share filter", () => {
       "buy buy,emphasismine,get back"
     );
     expectTweet(
-      `"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn’t scale. It’s easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum."\n\nhttps://www.amazon.com #buybuy #emphasismine #getback`
+      `"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn’t scale. It’s easier to point fingers and claim that people with PM/PO s..."\n\nhttps://www.amazon.com #buybuy #emphasismine #getback`
     );
     expectNoLinkedInPost();
   });
