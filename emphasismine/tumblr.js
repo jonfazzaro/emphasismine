@@ -21,6 +21,8 @@ const client = tumblr.createClient({
 });
 
 function call(method, options) {
+    if (!options.thumbnail) 
+        delete options.thumbnail;
     return new Promise((resolve, reject) => {
         client[method](process.env.tumblrBlogname, options, (e, data) => {
             if (e) reject(e);
