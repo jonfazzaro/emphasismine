@@ -19,7 +19,7 @@ describe("The share filter", () => {
     expectNoLinkedInPost();
   });
 
-  describe("given a tag of li", () => {
+  describe("given a professional signal tag", () => {
     it("posts to LinkedIn, too", () => {
       post(
         `"Just what do you think you are you doing, Dave?"`,
