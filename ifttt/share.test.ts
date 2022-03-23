@@ -8,12 +8,12 @@ describe("The share filter", () => {
 
   it("removes the top of the link post", () => {
     post(
-      `\nbuy\n\nthings`,
+      `<p>Scrum's unintended and gradual disconnect from Product Management</p>\n"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn’t scale. It’s easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum."\n\n`,
       "https://www.amazon.com",
       "buy buy,emphasismine,get back"
     );
     expect(Twitter.postNewTweet.setTweet).toHaveBeenCalledWith(
-      `buy\n\nthings\n\nhttps://www.amazon.com #buybuy #emphasismine #getback`
+      `"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn’t scale. It’s easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum."\n\nhttps://www.amazon.com #buybuy #emphasismine #getback`
     );
   });
 });

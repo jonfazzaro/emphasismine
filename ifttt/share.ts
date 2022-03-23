@@ -2,7 +2,7 @@ module.exports = function share(Tumblr:any, Twitter:any) {
   Twitter.postNewTweet.setTweet(content());
 
   function content() {
-    const body = Tumblr.newLinkPost.PostBodyHtml;
+    const body = main(Tumblr.newLinkPost.PostBodyHtml);
     const link = Tumblr.newLinkPost.LinkUrl;
     const tags = hash(Tumblr.newLinkPost.PostTags);
 
@@ -10,8 +10,11 @@ module.exports = function share(Tumblr:any, Twitter:any) {
   }
 
   function main(body: string) {
-    const SKIPPED_LINE = "\n\n";
-    return body.split(SKIPPED_LINE).slice(1).join(SKIPPED_LINE);
+    const P = "</p>";
+    if (body.indexOf(P) === -1)
+      return body;
+
+    return body.split(P).slice(1).join("").trim();
   }
 
   function hash(tags: string) {
