@@ -62,9 +62,7 @@ module.exports = async function (context) {
   }
 
   function tags(card) {
-    return ["emphasismine"].concat(
-      [...card.desc.matchAll(hashtags)].map(m => m[2])
-    );
+    return [...card.desc.matchAll(hashtags)].map(m => m[2])
   }
 };
 

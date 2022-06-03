@@ -56,7 +56,7 @@ describe("The emphasis mine function", () => {
         description: "Of every head he's had the pleasure to know",
         url: "http://penny.lane",
         type: "link",
-        tags: "emphasismine,head,come,go",
+        tags: "head,come,go",
         thumbnail: "https://beatles.pics/ringo",
       });
       expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
@@ -76,7 +76,7 @@ describe("The emphasis mine function", () => {
           body: "I'm going to Strawberry Fields.",
           url: null,
           type: "text",
-          tags: "emphasismine,nothingisreal,gethungabout",
+          tags: "nothingisreal,gethungabout",
         });
         expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
       });
