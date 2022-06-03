@@ -56,7 +56,9 @@ module.exports = async function (context) {
   }
 
   function description(card) {
-    return card.desc.replace(hashtags, "").trim();
+    return card.desc
+      .replace(hashtagsAtTheEnd, "")
+      .replace(hashtags, " $2").trim();
   }
 
   function tags(card) {
@@ -67,4 +69,5 @@ module.exports = async function (context) {
 };
 
 const hashtags = /(\s|\A)#(\w+)/g;
+const hashtagsAtTheEnd = /(\s|\A)#(\w+)($|\s+#\w+)/g;
 const readReminder = "Read: something interesting";

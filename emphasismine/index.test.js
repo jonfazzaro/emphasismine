@@ -45,7 +45,7 @@ describe("The emphasis mine function", () => {
     it("creates a link post", async () => {
       const card = {
         name: "There is a barber showing photographs",
-        desc: "Of every head he's had the pleasure to know #come #go",
+        desc: "Of every #head he's had the pleasure to know #come #go",
         attachments: [{ url: "http://penny.lane" }],
       };
       arrangeCard(card);
@@ -56,7 +56,7 @@ describe("The emphasis mine function", () => {
         description: "Of every head he's had the pleasure to know",
         url: "http://penny.lane",
         type: "link",
-        tags: "emphasismine,come,go",
+        tags: "emphasismine,head,come,go",
         thumbnail: "https://beatles.pics/ringo",
       });
       expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
