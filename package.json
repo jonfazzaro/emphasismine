@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "browser": "^0.2.6",
-    "cheerio": "^1.0.0-rc.10",
+    "cheerio": "^1.0.0-rc.12",
     "node-fetch": "^2.6.1",
     "tumblr.js": "^3.0.0"
   },
