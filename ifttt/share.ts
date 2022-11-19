@@ -1,14 +1,48 @@
-module.exports = function share(Tumblr: any, Twitter: any, Linkedin: any) {
+module.exports = function share(
+  Tumblr: any,
+  Twitter: any,
+  Linkedin: any,
+  MakerWebhooks: any,
+  MASTODON_TOKEN: string
+) {
   const IN = "in";
 
   Twitter.postNewTweet.setTweet(tweet());
-  if (isProfessional(Tumblr.newLinkPost.PostTags)) 
-    shareToLinkedIn();
+  shareToMastodon();
+  if (isProfessional(Tumblr.newLinkPost.PostTags)) shareToLinkedIn();
   else Linkedin.shareLink.skip();
+
+  function shareToMastodon() {
+  const MASTODON_SERVER = "hachyderm.io";
+    post(`https://${MASTODON_SERVER}/api/v1/statuses`, {
+      status: toot(),
+    });
+  }
+
+  function post(url: string, body: any) {
+    MakerWebhooks.makeWebRequest.setUrl(url);
+    MakerWebhooks.makeWebRequest.setMethod("POST");
+    MakerWebhooks.makeWebRequest.setContentType("application/json");
+    MakerWebhooks.makeWebRequest.setAdditionalHeaders(
+      `Authorization: Bearer ${MASTODON_TOKEN}`
+    );
+    MakerWebhooks.makeWebRequest.setBody(JSON.stringify(body));
+  }
 
   function shareToLinkedIn() {
     Linkedin.shareLink.setLinkUrl(Tumblr.newLinkPost.LinkUrl);
     Linkedin.shareLink.setComment(linkedInComment());
+  }
+
+  function toot() {
+    const tags = hash(Tumblr.newLinkPost.PostTags);
+    const body = stripHeader(Tumblr.newLinkPost.PostBodyHtml).replace(
+      /<\/?[^>]+(>|$)/g,
+      ""
+    );
+    const link = Tumblr.newLinkPost.LinkUrl;
+
+    return `${body}\n\n${link} ${tags}`.trim();
   }
 
   function tweet() {
@@ -21,8 +55,7 @@ module.exports = function share(Tumblr: any, Twitter: any, Linkedin: any) {
 
   function truncated(body: string, tags: string) {
     const overage = computeOverage(body, tags);
-    if (body.length && overage > 0) 
-      return truncate(body, overage, `..."`);
+    if (body.length && overage > 0) return truncate(body, overage, `..."`);
 
     return body;
   }
