@@ -10,12 +10,12 @@ describe("The share filter", () => {
 
   it("removes the top of the link post", () => {
     post(
-      `<p>Scrum's unintended and gradual disconnect from Product Management</p>\n"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn’t scale. It’s easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum."\n\n`,
+      `<p>Scrum's unintended and gradual disconnect from Product Management</p>\n“Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn’t scale. It’s easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum.”\n\n`,
       "https://www.amazon.com",
       "buy buy,get back"
     );
-    expectTweet(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn’t scale. It’s easier to point fingers and claim that people with PM/PO solutions or mu..."\n\nhttps://www.amazon.com #buybuy #getback`);
-    expectToot(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn’t scale. It’s easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum."\n\nhttps://www.amazon.com #buybuy #getback`);
+    expectTweet(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn't scale. It's easier to point fingers and claim that people with PM/PO solutions or mu..."\n\nhttps://www.amazon.com #buybuy #getback`);
+    expectToot(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn't scale. It's easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum."\n\nhttps://www.amazon.com #buybuy #getback`);
     expectNoLinkedInPost();
   });
 
@@ -61,7 +61,7 @@ function expectLinkedInPost(link: string, comment: string) {
 }
 
 function post(body: string, url: string, tags: string) {
-  share(tumblr({ body, url, tags }), Twitter, Linkedin, MakerWebhooks, "t00ts");
+  share(tumblr({ body, url, tags }), Twitter, Linkedin, MakerWebhooks, "hachyderm.io", "t00ts");
 }
 
 function expectToot(toot) {

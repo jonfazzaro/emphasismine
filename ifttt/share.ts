@@ -3,6 +3,7 @@ module.exports = function share(
   Twitter: any,
   Linkedin: any,
   MakerWebhooks: any,
+  MASTODON_SERVER: string,
   MASTODON_TOKEN: string
 ) {
   const IN = "in";
@@ -13,7 +14,6 @@ module.exports = function share(
   else Linkedin.shareLink.skip();
 
   function shareToMastodon() {
-  const MASTODON_SERVER = "hachyderm.io";
     post(`https://${MASTODON_SERVER}/api/v1/statuses`, {
       status: toot(),
     });
@@ -36,10 +36,7 @@ module.exports = function share(
 
   function toot() {
     const tags = hash(Tumblr.newLinkPost.PostTags);
-    const body = stripHeader(Tumblr.newLinkPost.PostBodyHtml).replace(
-      /<\/?[^>]+(>|$)/g,
-      ""
-    );
+    const body = fixQuotes(stripHtml(stripHeader(Tumblr.newLinkPost.PostBodyHtml)));
     const link = Tumblr.newLinkPost.LinkUrl;
 
     return `${body}\n\n${link} ${tags}`.trim();
@@ -47,7 +44,7 @@ module.exports = function share(
 
   function tweet() {
     const tags = hash(Tumblr.newLinkPost.PostTags);
-    const body = truncated(stripHeader(Tumblr.newLinkPost.PostBodyHtml), tags);
+    const body = truncated(fixQuotes(stripHeader(Tumblr.newLinkPost.PostBodyHtml)), tags);
     const link = Tumblr.newLinkPost.LinkUrl;
 
     return `${body}\n\n${link} ${tags}`.trim();
@@ -84,6 +81,17 @@ module.exports = function share(
     if (body.indexOf(P) === -1) return body;
 
     return body.split(P).slice(1).join("").trim();
+  }
+
+  function stripHtml(html: string) {
+    return html.replace(/<\/?[^>]+(>|$)/g, "")
+  }
+
+  function fixQuotes(content: string) {
+    return content
+      .replace(/“/g, `"`)
+      .replace(/”/g, `"`)
+      .replace(/’/g, `'`)
   }
 
   function hash(tags: string) {
