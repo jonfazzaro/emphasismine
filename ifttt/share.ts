@@ -89,9 +89,10 @@ module.exports = function share(
 
   function fixQuotes(content: string) {
     return content
-      .replace(/“/g, `"`)
-      .replace(/”/g, `"`)
-      .replace(/’/g, `'`)
+      .replace(/&ldquo;/g, `"`)
+      .replace(/&rdquo;/g, `"`)
+      .replace(/&rsquo;/g, `'`)
+      .replace(/&lsquo;/g, `'`)
   }
 
   function hash(tags: string) {
