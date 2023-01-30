@@ -56,15 +56,24 @@ module.exports = async function (context) {
   }
 
   function description(card) {
-    return card.desc
+    return desc(card)
       .replace(hashtagsAtTheEnd, "")
       .replace(hashtags, " $2").trim();
   }
 
   function tags(card) {
-    return [...card.desc.matchAll(hashtags)].map(m => m[2])
+    return [...desc(card).matchAll(hashtags)].map(m => m[2])
+  }
+
+  function desc(card) {
+    return unescapeHash(card.desc);
+  }
+
+  function unescapeHash(text) {
+    return text.replace(/\\#/g, "#");
   }
 };
+
 
 const hashtags = /(\s|\A)#(\w+)/g;
 const hashtagsAtTheEnd = /(\s|\A)#(\w+)($|\s+#\w+)/g;

@@ -45,7 +45,7 @@ describe("The emphasis mine function", () => {
     it("creates a link post", async () => {
       const card = {
         name: "There is a barber showing photographs",
-        desc: "Of every #head he's had the pleasure to know #come #go",
+        desc: `Of every #head he's had the pleasure to know #come \n\n\\#go`,
         attachments: [{ url: "http://penny.lane" }],
       };
       arrangeCard(card);
