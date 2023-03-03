@@ -35,6 +35,22 @@ describe("The share filter", () => {
       );
     });
   });
+
+  describe('given this post HTML', function () {
+    it('should post to LinkedIn', function () {
+      const HTML = `<p class="npf_link" data-npf='{"type":"link","url":"https://stackoverflow.blog/2023/02/13/coding-102-writing-code-other-people-can-read/","display_url":"https://stackoverflow.blog/2023/02/13/coding-102-writing-code-other-people-can-read/","title":"Coding 102: Writing code other people can read","poster":[{"media_key":"a4446df772d8a5a54a918af0f66d6085:a98981dbd19f9ffe-23","type":"image/jpeg","width":2560,"height":1344}]}'><a href="https://stackoverflow.blog/2023/02/13/coding-102-writing-code-other-people-can-read/" target="_blank">Coding 102: Writing code other people can read</a></p><p>"It took me two hours to code the script, but eight hours to undo the damage it caused and fix my convoluted code. That&rsquo;s the maintenance cost."</p>`
+      let url = "https://stackoverflow.blog/2023/02/13/coding-102-writing-code-other-people-can-read/";
+      post(
+          HTML,
+          url,
+          "in,code,quality,cost"
+      );
+      expectLinkedInPost(
+          url,
+          `"It took me two hours to code the script, but eight hours to undo the damage it caused and fix my convoluted code. That's the maintenance cost."\n\n#code #quality #cost`
+      );
+    });
+  });
 });
 
 const MakerWebhooks = { 

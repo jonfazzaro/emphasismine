@@ -70,7 +70,7 @@ module.exports = function share(
   }
 
   function linkedInComment() {
-    const body = stripHeader(Tumblr.newLinkPost.PostBodyHtml);
+    const body = stripHtml(fixQuotes(stripHeader(Tumblr.newLinkPost.PostBodyHtml)));
     const tags = hash(Tumblr.newLinkPost.PostTags);
 
     return `${body}\n\n${tags}`.trim();
