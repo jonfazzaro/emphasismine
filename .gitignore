@@ -98,3 +98,7 @@ __blobstorage__
 __queuestorage__
 __azurite_db*__.json
 .DS_Store
+/.idea/.gitignore
+/.idea/emphasismine.iml
+/.idea/modules.xml
+/.idea/vcs.xml
