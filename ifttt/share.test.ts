@@ -36,8 +36,8 @@ describe("The share filter", () => {
     });
   });
 
-  describe('given this post HTML', function () {
-    it('should post to LinkedIn', function () {
+  describe('given this post HTML', () => {
+    it('should post to LinkedIn', () => {
       const HTML = `<p class="npf_link" data-npf='{"type":"link","url":"https://stackoverflow.blog/2023/02/13/coding-102-writing-code-other-people-can-read/","display_url":"https://stackoverflow.blog/2023/02/13/coding-102-writing-code-other-people-can-read/","title":"Coding 102: Writing code other people can read","poster":[{"media_key":"a4446df772d8a5a54a918af0f66d6085:a98981dbd19f9ffe-23","type":"image/jpeg","width":2560,"height":1344}]}'><a href="https://stackoverflow.blog/2023/02/13/coding-102-writing-code-other-people-can-read/" target="_blank">Coding 102: Writing code other people can read</a></p><p>"It took me two hours to code the script, but eight hours to undo the damage it caused and fix my convoluted code. That&rsquo;s the maintenance cost."</p>`
       let url = "https://stackoverflow.blog/2023/02/13/coding-102-writing-code-other-people-can-read/";
       post(
@@ -48,6 +48,23 @@ describe("The share filter", () => {
       expectLinkedInPost(
           url,
           `"It took me two hours to code the script, but eight hours to undo the damage it caused and fix my convoluted code. That's the maintenance cost."\n\n#code #quality #cost`
+      );
+    });
+  });
+
+  describe('given some other post HTML', () => {
+
+    it('should post like this to LinkedIn', () => {
+      const HTML = `<p class="npf_link" data-npf='{"type":"link","url":"https://seths.blog/2023/02/checking-the-date/","display_url":"https://seths.blog/2023/02/checking-the-date/","title":"Checking the date","poster":[{"media_key":"60e6468e3fbe6b6e0345f1542ab661af:45eb4eb6fd1ff38a-d0","type":"image/jpeg","width":1200,"height":628}]}'><a href="https://seths.blog/2023/02/checking-the-date/" target="_blank">Checking the date</a></p><p>"Every day is April Fools from now on."</p>`
+      let url = "https://seths.blog/2023/02/checking-the-date/";
+      post(
+          HTML,
+          url,
+          "in,ai"
+      );
+      expectLinkedInPost(
+          url,
+          `"Every day is April Fools from now on."\n\n#ai`
       );
     });
   });
