@@ -9,6 +9,9 @@ module.exports = function share(
     DEBUG: boolean = false
 ) {
     const IN = "in";
+    const inputPostTags = Tumblr.newLinkPost.PostTags;
+    const inputPostBodyHtml = Tumblr.newLinkPost.PostBodyHtml;
+    const inputLinkUrl = Tumblr.newLinkPost.LinkUrl;
 
     (function () {
         if (DEBUG)
@@ -17,14 +20,14 @@ module.exports = function share(
         Sms.sendMeText.skip();
         Twitter.postNewTweet.setTweet(tweet());
         shareToMastodon();
-        if (isProfessional(Tumblr.newLinkPost.PostTags)) shareToLinkedIn();
+        if (isProfessional(inputPostTags)) shareToLinkedIn();
         else Linkedin.shareLink.skip();
 
         function tweet() {
-            const tags = hash(Tumblr.newLinkPost.PostTags);
+            const tags = hash(inputPostTags);
             return content(
-                truncated(clean(Tumblr.newLinkPost.PostBodyHtml), tags),
-                Tumblr.newLinkPost.LinkUrl,
+                truncated(clean(inputPostBodyHtml), tags),
+                inputLinkUrl,
                 tags);
         }
 
@@ -35,21 +38,21 @@ module.exports = function share(
         }
 
         function shareToLinkedIn() {
-            Linkedin.shareLink.setLinkUrl(Tumblr.newLinkPost.LinkUrl);
+            Linkedin.shareLink.setLinkUrl(inputLinkUrl);
             Linkedin.shareLink.setComment(linkedInComment());
         }
 
         function toot() {
             return content(
-                clean(Tumblr.newLinkPost.PostBodyHtml),
-                Tumblr.newLinkPost.LinkUrl,
-                hash(Tumblr.newLinkPost.PostTags));
+                clean(inputPostBodyHtml),
+                inputLinkUrl,
+                hash(inputPostTags));
         }
 
         function linkedInComment() {
             return comment(
-                clean(Tumblr.newLinkPost.PostBodyHtml),
-                hash(Tumblr.newLinkPost.PostTags));
+                clean(inputPostBodyHtml),
+                hash(inputPostTags));
         }
 
         function post(url: string, body: any) {
