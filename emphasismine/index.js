@@ -11,14 +11,13 @@ module.exports = async function (context) {
   else await remindMeToRead();
 
   function isReadReminder(card) {
-    return card.name == readReminder;
+    return card.name === readReminder;
   }
 
   async function remindMeToRead() {
     await trello.createCard(readReminder, null, null, 
       [
-        trello.labels.deliverValueContinuously, 
-        trello.labels.experimentAndLearnRapidly
+        trello.labels.deep
       ]);
   }
 

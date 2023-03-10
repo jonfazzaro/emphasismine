@@ -26,16 +26,13 @@ describe("The emphasis mine function", () => {
     it("creates a card to remind me to read something interesting", () => {
       expect(_mocked.trello.createCard)
         .toHaveBeenCalledWith(readReminder, null, null, 
-          [
-            _mocked.trello.labels.deliverValueContinuously, 
-            _mocked.trello.labels.experimentAndLearnRapidly
-          ]);
+          [ _mocked.trello.labels.deep ]);
     });
   });
 
   describe("given a card", () => {
     beforeEach(() => {
-      metadata.fetch = jest.fn(url => {
+      metadata.fetch = jest.fn(_ => {
         return Promise.resolve({
           image: "https://beatles.pics/ringo",
         });
@@ -119,10 +116,8 @@ const _mocked = {
     archive: jest.fn(() => Promise.resolve(null)),
     itsAMock: true,
     labels: {
-      deliverValueContinuously: "5cca03c6af45832d134e2bce",
-      experimentAndLearnRapidly: "5cca03e5112dde45f0813208",
-      makeSafetyAPrerequisite: "5cca03d8ffff90513f348518",
-      makePeopleAwesome: "5cca03bbda292567444b6024",
+      deep: "912834759pqu3iorh",
+      shallow: "awoiegfi34",
     },
   },
 };

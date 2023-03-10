@@ -69,8 +69,6 @@ function trello(context) {
 module.exports = trello;
 
 const labels = {
-  deliverValueContinuously: "5cca03c6af45832d134e2bce",
-  experimentAndLearnRapidly: "5cca03e5112dde45f0813208",
-  makeSafetyAPrerequisite: "5cca03d8ffff90513f348518",
-  makePeopleAwesome: "5cca03bbda292567444b6024"
+  deep: "63acc9b1b9ec050165b703c2",
+  shallow: "63acc9e61aff960147023172",
 }
