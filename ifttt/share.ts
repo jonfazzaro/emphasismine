@@ -1,7 +1,7 @@
 module.exports = function share(
     Tumblr: any,
     Twitter: any,
-    Linkedin: any,
+    Buffer: any,
     MakerWebhooks: any,
     Sms: any,
     MASTODON_SERVER: string,
@@ -14,21 +14,21 @@ module.exports = function share(
     const inputLinkUrl = Tumblr.newLinkPost.LinkUrl;
 
     (function () {
-        if (DEBUG)
-            return debug();
+        if (DEBUG) return debug();
 
         Sms.sendMeText.skip();
         Twitter.postNewTweet.setTweet(tweet());
         shareToMastodon();
         if (isProfessional(inputPostTags)) shareToLinkedIn();
-        else Linkedin.shareLink.skip();
+        else Buffer.addToBuffer.skip();
 
         function tweet() {
             const tags = hash(inputPostTags);
             return content(
                 truncated(clean(inputPostBodyHtml), tags),
                 inputLinkUrl,
-                tags);
+                tags
+            );
         }
 
         function shareToMastodon() {
@@ -38,27 +38,21 @@ module.exports = function share(
         }
 
         function shareToLinkedIn() {
-            Linkedin.shareLink.setLinkUrl(inputLinkUrl);
-            Linkedin.shareLink.setComment(linkedInComment());
+            Buffer.addToBuffer.setMessage(toot());
         }
 
         function toot() {
-            return content(
-                clean(inputPostBodyHtml),
-                inputLinkUrl,
-                hash(inputPostTags));
+            return content(clean(inputPostBodyHtml), inputLinkUrl, hash(inputPostTags));
         }
 
         function linkedInComment() {
-            return comment(
-                clean(inputPostBodyHtml),
-                hash(inputPostTags));
+            return comment(clean(inputPostBodyHtml), hash(inputPostTags));
         }
 
         function post(url: string, body: any) {
             MakerWebhooks.makeWebRequest.setUrl(url);
-            MakerWebhooks.makeWebRequest.setMethod("POST");
-            MakerWebhooks.makeWebRequest.setContentType("application/json");
+            MakerWebhooks.makeWebRequest.setMethod('POST');
+            MakerWebhooks.makeWebRequest.setContentType('application/json');
             MakerWebhooks.makeWebRequest.setAdditionalHeaders(
                 `Authorization: Bearer ${MASTODON_TOKEN}`
             );
@@ -97,14 +91,14 @@ module.exports = function share(
         }
 
         function stripHeader(body: string) {
-            const P = "</p>";
+            const P = '</p>';
             if (body.indexOf(P) === -1) return body;
 
-            return body.split(P).slice(1).join("").trim();
+            return body.split(P).slice(1).join('').trim();
         }
 
         function stripHtml(html: string) {
-            return html.replace(/<\/?[^>]+(>|$)/g, "")
+            return html.replace(/<\/?[^>]+(>|$)/g, '');
         }
 
         function fixQuotes(content: string) {
@@ -112,31 +106,29 @@ module.exports = function share(
                 .replace(/&ldquo;/g, `"`)
                 .replace(/&rdquo;/g, `"`)
                 .replace(/&rsquo;/g, `'`)
-                .replace(/&lsquo;/g, `'`)
+                .replace(/&lsquo;/g, `'`);
         }
 
         function hash(tags: string) {
-            if (!tags) return "";
+            if (!tags) return '';
 
             return tags
-                .split(",")
-                .filter(t => t != IN)
-                .map(t => "#" + t.replace(/\s/g, ""))
-                .join(" ");
+                .split(',')
+                .filter((t) => t != IN)
+                .map((t) => '#' + t.replace(/\s/g, ''))
+                .join(' ');
         }
 
         function isProfessional(tags: string) {
-            return !!tags.split(",").filter(t => t === IN).length;
+            return !!tags.split(',').filter((t) => t === IN).length;
         }
 
         function debug() {
             Twitter.postNewTweet.skip();
             MakerWebhooks.makeWebRequest.skip();
-            Linkedin.shareLink.skip();
-            Sms.sendMeText.setMessage(`Tweet: ${tweet()}`);
-            Sms.sendMeText.setMessage(`Toot: ${toot()}`);
-            Sms.sendMeText.setMessage(`LinkedIn: ${linkedInComment()}`);
+            Buffer.addToBuffer.skip();
+            Sms.sendMeText.setMessage(`Shared: ${toot()}`);
         }
+    })();
 
-    }());
 };
