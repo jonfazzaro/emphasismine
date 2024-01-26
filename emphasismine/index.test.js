@@ -65,7 +65,7 @@ describe("The emphasis mine function", () => {
                         text: "\"Of ev\'ry head he\'s had the pleasure to know\"",
                     }
                 ],
-                tags: ["head","come","go"],
+                tags: ["head", "come", "go"],
             });
             expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
         });
@@ -79,24 +79,7 @@ describe("The emphasis mine function", () => {
                 await run();
             });
 
-            it("creates a link post without a poster", () => {
-                expect(metadata.fetch).toHaveBeenCalledWith("http://penny.lane");
-                expect(tumblr.post).toHaveBeenCalledWith({
-                    content: [
-                        {
-                            type: "link",
-                            url: "http://penny.lane",
-                            title: "There is a barber showing photographs",
-                        },
-                        {
-                            type: "text",
-                            text: "\"Of ev\'ry head he\'s had the pleasure to know\"",
-                        }
-                    ],
-                    tags: ["head","come","go"],
-                });
-                expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
-            });
+            expectLinkPostWithoutPoster();
         });
 
         describe('with no metadata image', () => {
@@ -108,24 +91,7 @@ describe("The emphasis mine function", () => {
                 await run();
             });
 
-            it("creates a link post without a poster", () => {
-                expect(metadata.fetch).toHaveBeenCalledWith("http://penny.lane");
-                expect(tumblr.post).toHaveBeenCalledWith({
-                    content: [
-                        {
-                            type: "link",
-                            url: "http://penny.lane",
-                            title: "There is a barber showing photographs",
-                        },
-                        {
-                            type: "text",
-                            text: "\"Of ev\'ry head he\'s had the pleasure to know\"",
-                        }
-                    ],
-                    tags: ["head","come","go"],
-                });
-                expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
-            });
+            expectLinkPostWithoutPoster();
         });
 
         describe('with an incomplete metadata image', () => {
@@ -137,24 +103,7 @@ describe("The emphasis mine function", () => {
                 await run();
             });
 
-            it("creates a link post without a poster", () => {
-                expect(metadata.fetch).toHaveBeenCalledWith("http://penny.lane");
-                expect(tumblr.post).toHaveBeenCalledWith({
-                    content: [
-                        {
-                            type: "link",
-                            url: "http://penny.lane",
-                            title: "There is a barber showing photographs",
-                        },
-                        {
-                            type: "text",
-                            text: "\"Of ev\'ry head he\'s had the pleasure to know\"",
-                        }
-                    ],
-                    tags: ["head","come","go"],
-                });
-                expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
-            });
+            expectLinkPostWithoutPoster();
         });
 
         describe("with no URL attachment", () => {
@@ -193,6 +142,27 @@ describe("The emphasis mine function", () => {
                 expect(_mocked.trello.createCard).not.toHaveBeenCalled();
             });
         });
+
+        function expectLinkPostWithoutPoster() {
+            it("creates a link post without a poster", () => {
+                expect(metadata.fetch).toHaveBeenCalledWith("http://penny.lane");
+                expect(tumblr.post).toHaveBeenCalledWith({
+                    content: [
+                        {
+                            type: "link",
+                            url: "http://penny.lane",
+                            title: "There is a barber showing photographs",
+                        },
+                        {
+                            type: "text",
+                            text: "\"Of ev\'ry head he\'s had the pleasure to know\"",
+                        }
+                    ],
+                    tags: ["head", "come", "go"],
+                });
+                expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
+            });
+        }
     });
 });
 
