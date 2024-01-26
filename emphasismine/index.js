@@ -36,13 +36,19 @@ module.exports = async function (context) {
     async function linkPost(card) {
         const meta = await metadata.fetch(card.url);
 
+        function isMetaImageValid(meta) {
+            return !!meta
+                && !!meta.image
+                && meta.image.startsWith("http")
+        }
+
         return {
             content: [
                 {
                     type: "link",
                     url: card.url,
                     title: card.name,
-                    ...(!!meta && !!meta.image) && { poster: [{url: meta.image}] }
+                    ...(isMetaImageValid(meta)) && { poster: [{url: meta.image}] }
                 },
                 {
                     type: "text",

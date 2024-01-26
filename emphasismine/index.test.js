@@ -70,7 +70,7 @@ describe("The emphasis mine function", () => {
             expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
         });
 
-        describe('with no URL metadata', () => {
+        describe('with no metadata', () => {
             beforeEach(async () => {
                 metadata.fetch.mockReturnValue(Promise.resolve(null))
                 tumblr.post.mockClear()
@@ -99,9 +99,38 @@ describe("The emphasis mine function", () => {
             });
         });
 
-        describe('with no URL metadata image', () => {
+        describe('with no metadata image', () => {
             beforeEach(async () => {
                 metadata.fetch.mockReturnValue(Promise.resolve({}))
+                tumblr.post.mockClear()
+                _mocked.trello.archive.mockClear()
+                arrangeCard(card);
+                await run();
+            });
+
+            it("creates a link post without a poster", () => {
+                expect(metadata.fetch).toHaveBeenCalledWith("http://penny.lane");
+                expect(tumblr.post).toHaveBeenCalledWith({
+                    content: [
+                        {
+                            type: "link",
+                            url: "http://penny.lane",
+                            title: "There is a barber showing photographs",
+                        },
+                        {
+                            type: "text",
+                            text: "\"Of ev\'ry head he\'s had the pleasure to know\"",
+                        }
+                    ],
+                    tags: ["head","come","go"],
+                });
+                expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
+            });
+        });
+
+        describe('with an incomplete metadata image', () => {
+            beforeEach(async () => {
+                metadata.fetch.mockReturnValue(Promise.resolve({image: "/rel/path/to/img"}))
                 tumblr.post.mockClear()
                 _mocked.trello.archive.mockClear()
                 arrangeCard(card);
