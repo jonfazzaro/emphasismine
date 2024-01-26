@@ -1,7 +1,7 @@
 module.exports = async function (context) {
-    const trello = require("./trello")(context);
-    const metadata = require("./openGraph");
-    const tumblr = require("./tumblr");
+    const trello = require("./edge/trello")(context);
+    const metadata = require("./edge/openGraph");
+    const tumblr = require("./edge/tumblr");
 
     const card = await trello.getNextCard();
     if (card) {
@@ -26,6 +26,11 @@ module.exports = async function (context) {
             return
 
         await tumblr.post(await linkPost(card));
+
+        // TODO: Share to socials here!
+        // Threads
+        // Mastodon
+
         await trello.archive(card);
     }
 
@@ -35,12 +40,6 @@ module.exports = async function (context) {
 
     async function linkPost(card) {
         const meta = await metadata.fetch(card.url);
-
-        function isMetaImageValid(meta) {
-            return !!meta
-                && !!meta.image
-                && meta.image.startsWith("http")
-        }
 
         return {
             content: [
@@ -57,6 +56,13 @@ module.exports = async function (context) {
             ],
             tags: tags(card),
         };
+
+    }
+
+    function isMetaImageValid(meta) {
+        return !!meta
+            && !!meta.image
+            && meta.image.startsWith("http")
     }
 
     function description(card) {

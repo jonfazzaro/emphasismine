@@ -1,10 +1,10 @@
-jest.mock("./trello");
-jest.mock("./tumblr");
-jest.mock("./openGraph");
+jest.mock("./edge/trello");
+jest.mock("./edge/tumblr");
+jest.mock("./edge/openGraph");
 
-const trello = require("./trello");
-const tumblr = require("./tumblr");
-const metadata = require("./openGraph");
+const trello = require("./edge/trello");
+const tumblr = require("./edge/tumblr");
+const metadata = require("./edge/openGraph");
 
 const subject = require("./index");
 
