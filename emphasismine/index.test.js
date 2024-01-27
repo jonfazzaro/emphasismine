@@ -1,9 +1,11 @@
 jest.mock("./edge/trello");
 jest.mock("./edge/tumblr");
+jest.mock("./edge/threads");
 jest.mock("./edge/openGraph");
 
 const trello = require("./edge/trello");
 const tumblr = require("./edge/tumblr");
+const threads = require("./edge/threads");
 const metadata = require("./edge/openGraph");
 
 const subject = require("./index");
@@ -12,6 +14,7 @@ describe("The emphasis mine function", () => {
     beforeEach(() => {
         trello.mockReturnValue(_mocked.trello);
         tumblr.post = jest.fn(() => Promise.resolve());
+        threads.post = jest.fn(() => Promise.resolve());
     });
 
     describe("given no cards in the list", () => {
@@ -48,8 +51,11 @@ describe("The emphasis mine function", () => {
             await run();
         });
 
-        it("creates a link post", () => {
+        it('fetches metadata for the link', () => {
             expect(metadata.fetch).toHaveBeenCalledWith("http://penny.lane");
+        });
+
+        it("posts to Tumblr", () => {
             expect(tumblr.post).toHaveBeenCalledWith({
                 content: [
                     {
@@ -67,6 +73,15 @@ describe("The emphasis mine function", () => {
                 ],
                 tags: ["head", "come", "go"],
             });
+        });
+
+        it('posts to Threads', () => {
+            expect(threads.post).toHaveBeenCalledWith({
+                content: "\"Of ev\'ry head he\'s had the pleasure to know\"\n\nhttp://penny.lane"
+            })
+        });
+
+        it('archives the Trello card', () => {
             expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
         });
 

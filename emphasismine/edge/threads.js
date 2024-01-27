@@ -12,8 +12,7 @@ module.exports = {
             base: process.env.threadsBaseUrl
         });
 
-        await client.posts.create(process.env.threadsUserId, {contents: params.content}).then(response => {
-            console.log(response);
-        });
+        await client.posts.create(process.env.threadsUserId, {contents: params.content})
+            .catch(e => console.log(e))
     }
 };

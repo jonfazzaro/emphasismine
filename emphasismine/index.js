@@ -2,6 +2,7 @@ module.exports = async function (context) {
     const trello = require("./edge/trello")(context);
     const metadata = require("./edge/openGraph");
     const tumblr = require("./edge/tumblr");
+    const threads = require('./edge/threads')
 
     const card = await trello.getNextCard();
     if (card) {
@@ -27,11 +28,15 @@ module.exports = async function (context) {
 
         await tumblr.post(await linkPost(card));
 
-        // TODO: Share to socials here!
-        // Threads
-        // Mastodon
+        await threads.post({
+            content: threadsPost(card)
+        })
 
         await trello.archive(card);
+    }
+
+    function threadsPost(card) {
+        return `${description(card)}\n\n${card.url}`;
     }
 
     function attachedUrl(card) {
