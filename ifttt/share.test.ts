@@ -5,6 +5,7 @@ describe("The share filter", () => {
         post("", "", "");
         expectToot("");
         expectTweet("");
+        expectThread("");
         expectNoLinkedInPost();
         expectNoSmsMessage();
     });
@@ -17,6 +18,7 @@ describe("The share filter", () => {
         );
         expectTweet(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn't scale. It's easier to point fingers and claim that people with PM/PO solutions or mu..."\n\nhttps://www.amazon.com #buybuy #getback`);
         expectToot(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn't scale. It's easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum."\n\nhttps://www.amazon.com #buybuy #getback`);
+        expectThread(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn't scale. It's easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum."\n\nhttps://www.amazon.com`);
         expectNoLinkedInPost();
         expectNoSmsMessage();
     });
@@ -31,6 +33,7 @@ describe("The share filter", () => {
 
             expectToot(`"Just what do you think you are you doing, Dave?"\n\nhttps://www.hal9000.net/daisy #agility #horsefeathers`);
             expectTweet(`"Just what do you think you are you doing, Dave?"\n\nhttps://www.hal9000.net/daisy #agility #horsefeathers`);
+            expectThread(`"Just what do you think you are you doing, Dave?"\n\nhttps://www.hal9000.net/daisy`);
             expectLinkedInPost(`"Just what do you think you are you doing, Dave?"\n\nhttps://www.hal9000.net/daisy #agility #horsefeathers`);
             expectNoSmsMessage();
         });
@@ -62,7 +65,8 @@ describe("The share filter", () => {
 
         it('should not post anywhere', function () {
             expect(Twitter.postNewTweet.skip).toHaveBeenCalled();
-            expect(MakerWebhooks.makeWebRequest.skip).toHaveBeenCalled();
+            expect(MakerWebhooks.makeWebRequest1.skip).toHaveBeenCalled();
+            expect(MakerWebhooks.makeWebRequest2.skip).toHaveBeenCalled();
             expect(Buffer_.addToBuffer.skip).toHaveBeenCalled();
         });
 
@@ -78,7 +82,15 @@ describe("The share filter", () => {
 });
 
 const MakerWebhooks = {
-    makeWebRequest: {
+    makeWebRequest1: {
+        setUrl: jest.fn(),
+        setMethod: jest.fn(),
+        setContentType: jest.fn(),
+        setAdditionalHeaders: jest.fn(),
+        setBody: jest.fn(),
+        skip: jest.fn()
+    },
+    makeWebRequest2: {
         setUrl: jest.fn(),
         setMethod: jest.fn(),
         setContentType: jest.fn(),
@@ -115,7 +127,9 @@ function post(body: string, url: string, tags: string) {
         tumblr({body, url, tags}),
         Twitter, Buffer_, MakerWebhooks, Sms,
         "hachyderm.io",
-        "t00ts");
+        "t00ts",
+        "zuckU",
+        );
 }
 
 function debugPost(body: string, url: string, tags: string) {
@@ -124,16 +138,41 @@ function debugPost(body: string, url: string, tags: string) {
         Twitter, Buffer_, MakerWebhooks, Sms,
         "hachyderm.io",
         "t00ts",
+        "zuckU",
         true);
 }
 
 function expectToot(toot) {
-    expect(MakerWebhooks.makeWebRequest.setUrl).toHaveBeenCalledWith("https://hachyderm.io/api/v1/statuses");
-    expect(MakerWebhooks.makeWebRequest.setMethod).toHaveBeenCalledWith("POST");
-    expect(MakerWebhooks.makeWebRequest.setContentType).toHaveBeenCalledWith("application/json");
-    expect(MakerWebhooks.makeWebRequest.setAdditionalHeaders).toHaveBeenCalledWith("Authorization: Bearer t00ts");
-    expect(MakerWebhooks.makeWebRequest.setBody).toHaveBeenCalledWith(JSON.stringify({status: toot}));
-    expect(MakerWebhooks.makeWebRequest.skip).not.toHaveBeenCalled()
+    expect(MakerWebhooks.makeWebRequest1.setUrl).toHaveBeenCalledWith("https://hachyderm.io/api/v1/statuses");
+    expect(MakerWebhooks.makeWebRequest1.setMethod).toHaveBeenCalledWith("POST");
+    expect(MakerWebhooks.makeWebRequest1.setContentType).toHaveBeenCalledWith("application/json");
+    expect(MakerWebhooks.makeWebRequest1.setAdditionalHeaders).toHaveBeenCalledWith("Authorization: Bearer t00ts");
+    expect(MakerWebhooks.makeWebRequest1.setBody).toHaveBeenCalledWith(JSON.stringify({status: toot}));
+    expect(MakerWebhooks.makeWebRequest1.skip).not.toHaveBeenCalled()
+}
+
+function expectThread(thread) {
+    expect(MakerWebhooks.makeWebRequest2.setUrl).toHaveBeenCalledWith("https://i.instagram.com/api/v1/media/configure_text_only_post/");
+    expect(MakerWebhooks.makeWebRequest2.setMethod).toHaveBeenCalledWith("POST");
+    expect(MakerWebhooks.makeWebRequest2.setContentType).toHaveBeenCalledWith("application/x-www-form-urlencoded; charset=UTF-8");
+    expect(MakerWebhooks.makeWebRequest2.setAdditionalHeaders)
+        .toHaveBeenCalledWith("authorization: Bearer IGT:2:zuckU\nuser-agent: Barcelona 289.0.0.77.109 Android\nsec-fetch-site: same-origin");
+    expect(MakerWebhooks.makeWebRequest2.setBody).toHaveBeenCalledWith('signed_body=SIGNATURE.' + JSON.stringify( {
+        "publish_mode": "text_post",
+        "text_post_app_info": "{\"reply_control\":0}",
+        "timezone_offset": "0",
+        "source_type": "4",
+        "_uid": "9945584",
+        "device_id": "1o03hiy9f9280000",
+        "caption": thread,
+        "device": {
+            "manufacturer": "OnePlus",
+            "model": "ONEPLUS+A3003",
+            "android_version": 26,
+            "android_release": "8.1.0"
+        }
+    }));
+    expect(MakerWebhooks.makeWebRequest2.skip).not.toHaveBeenCalled()
 }
 
 function expectTweet(tweet) {
