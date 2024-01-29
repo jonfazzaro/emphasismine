@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@threadsjs/threads.js": "^1.9.0",
+    "axios": "^1.6.7",
     "browser": "^0.2.6",
     "cheerio": "^1.0.0-rc.12",
     "node-fetch": "^2.6.1",
