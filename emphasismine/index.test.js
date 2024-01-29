@@ -1,11 +1,13 @@
 jest.mock("./edge/trello");
 jest.mock("./edge/tumblr");
 jest.mock("./edge/threads");
+jest.mock("./edge/share");
 jest.mock("./edge/openGraph");
 
 const trello = require("./edge/trello");
 const tumblr = require("./edge/tumblr");
 const threads = require("./edge/threads");
+const share = require("./edge/share");
 const metadata = require("./edge/openGraph");
 
 const subject = require("./index");
@@ -15,6 +17,7 @@ describe("The emphasis mine function", () => {
         trello.mockReturnValue(_mocked.trello);
         tumblr.post = jest.fn(() => Promise.resolve());
         threads.post = jest.fn(() => Promise.resolve());
+        share.post = jest.fn(() => Promise.resolve());
     });
 
     describe("given no cards in the list", () => {
