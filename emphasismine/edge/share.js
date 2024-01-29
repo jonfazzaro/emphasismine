@@ -1,4 +1,5 @@
 const axios = require('axios');
+const threads = require("./threads");
 
 module.exports = {
     post: async (params) => {
@@ -6,6 +7,10 @@ module.exports = {
             headers: {
                 "content-type": "application/json",
             },
+        });
+
+        await threads.post({
+            content: `${params.text}\n\n${params.link}`
         })
     }
 }

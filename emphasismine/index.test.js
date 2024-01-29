@@ -1,12 +1,10 @@
 jest.mock("./edge/trello");
 jest.mock("./edge/tumblr");
-jest.mock("./edge/threads");
 jest.mock("./edge/share");
 jest.mock("./edge/openGraph");
 
 const trello = require("./edge/trello");
 const tumblr = require("./edge/tumblr");
-const threads = require("./edge/threads");
 const share = require("./edge/share");
 const metadata = require("./edge/openGraph");
 
@@ -16,7 +14,6 @@ describe("The emphasis mine function", () => {
     beforeEach(() => {
         trello.mockReturnValue(_mocked.trello);
         tumblr.post = jest.fn(() => Promise.resolve());
-        threads.post = jest.fn(() => Promise.resolve());
         share.post = jest.fn(() => Promise.resolve());
     });
 
@@ -78,9 +75,11 @@ describe("The emphasis mine function", () => {
             });
         });
 
-        it('posts to Threads', () => {
-            expect(threads.post).toHaveBeenCalledWith({
-                content: "\"Of ev\'ry head he\'s had the pleasure to know\"\n\nhttp://penny.lane"
+        it('shares to socials', () => {
+            expect(share.post).toHaveBeenCalledWith({
+                link:"http://penny.lane" ,
+                text: "\"Of ev\'ry head he\'s had the pleasure to know\"",
+                tags: "head,come,go"
             })
         });
 
