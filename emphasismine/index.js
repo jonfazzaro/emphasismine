@@ -1,4 +1,4 @@
-module.exports = async function (context) {
+module.exports = async function (context, debug = false) {
     const trello = require("./edge/trello")(context);
     const metadata = require("./edge/openGraph");
     const tumblr = require("./edge/tumblr");
@@ -30,7 +30,8 @@ module.exports = async function (context) {
         await share.post({
             link: card.url,
             text: description(card),
-            tags: tags(card).join(',')
+            tags: tags(card).join(','),
+            ...(!!debug) && { debug: true }
         })
 
         await trello.archive(card);
