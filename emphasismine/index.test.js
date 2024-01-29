@@ -83,6 +83,18 @@ describe("The emphasis mine function", () => {
             })
         });
 
+        describe('when debugging', () => {
+            it('pass the debug flag to share', async () => {
+                await runDebug();
+                expect(share.post).toHaveBeenCalledWith({
+                    debug: true,
+                    link:"http://penny.lane" ,
+                    text: "\"Of ev\'ry head he\'s had the pleasure to know\"",
+                    tags: "head,come,go"
+                })
+            });
+        });
+
         it('archives the Trello card', () => {
             expect(_mocked.trello.archive).toHaveBeenCalledWith(card);
         });
@@ -188,14 +200,17 @@ function arrangeCard(card) {
 }
 
 async function run() {
-    await subject(_mocked.context, _mocked.timer);
+    await subject(_mocked.context);
+}
+
+async function runDebug() {
+    await subject(_mocked.context, true);
 }
 
 const _mocked = {
     context: {
         log: jest.fn(),
     },
-    timer: {isPastDue: false},
     trello: {
         getNextCard: jest.fn(() => Promise.resolve(null)),
         createCard: jest.fn(() => Promise.resolve(null)),
