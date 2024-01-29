@@ -1,58 +1,52 @@
 module.exports = function share(
-    Tumblr: any,
-    Twitter: any,
     Buffer: any,
     MakerWebhooks: any,
     Sms: any,
-    MASTODON_SERVER: string,
-    MASTODON_TOKEN: string,
     THREADS_TOKEN: string,
     DEBUG: boolean = false
 ) {
-    const IN = "in";
-    const inputPostTags = Tumblr.newLinkPost.PostTags;
-    const inputPostBodyHtml = Tumblr.newLinkPost.PostBodyHtml;
-    const inputLinkUrl = Tumblr.newLinkPost.LinkUrl;
-
     (function () {
+            const IN = "in";
+            const input = JSON.parse(MakerWebhooks.jsonEvent.JsonPayload)
+
             if (DEBUG) return debug();
 
             Sms.sendMeText.skip();
-            Twitter.postNewTweet.setTweet(tweet());
-            postToMastodon(toot())
-            postToThreads(thread());
-            if (isProfessional(inputPostTags)) shareToLinkedIn();
-            else Buffer.addToBuffer.skip();
+            Buffer.addToBuffer2.setMessage(tweet());
+            shareToMastodon(toot())
+            // shareToThreads(thread());
+            if (isProfessional(input.tags)) shareToLinkedIn();
+            else Buffer.addToBuffer1.skip();
 
             function tweet() {
-                const tags = hash(inputPostTags);
+                const tags = hash(input.tags);
                 return content(
-                    truncated(clean(inputPostBodyHtml), tags),
-                    inputLinkUrl,
+                    truncated(clean(input.text), tags),
+                    input.link,
                     tags
                 );
             }
 
             function shareToLinkedIn() {
-                Buffer.addToBuffer.setMessage(toot());
+                Buffer.addToBuffer1.setMessage(toot());
             }
 
             function thread() {
-                return content(clean(inputPostBodyHtml), inputLinkUrl, "");
+                return content(clean(input.text), input.link, "");
             }
 
             function toot() {
-                return content(clean(inputPostBodyHtml), inputLinkUrl, hash(inputPostTags));
+                return content(clean(input.text), input.link, hash(input.tags));
             }
 
-            function postToThreads(content: string) {
-                MakerWebhooks.makeWebRequest2.setUrl(`https://i.instagram.com/api/v1/media/configure_text_only_post/`);
-                MakerWebhooks.makeWebRequest2.setMethod('POST');
-                MakerWebhooks.makeWebRequest2.setContentType('application/x-www-form-urlencoded; charset=UTF-8');
-                MakerWebhooks.makeWebRequest2.setAdditionalHeaders(
+            function shareToThreads(content: string) {
+                MakerWebhooks.makeWebRequest.setUrl(`https://i.instagram.com/api/v1/media/configure_text_only_post/`);
+                MakerWebhooks.makeWebRequest.setMethod('POST');
+                MakerWebhooks.makeWebRequest.setContentType('application/x-www-form-urlencoded; charset=UTF-8');
+                MakerWebhooks.makeWebRequest.setAdditionalHeaders(
                     `authorization: Bearer IGT:2:${THREADS_TOKEN}\nuser-agent: Barcelona 289.0.0.77.109 Android\nsec-fetch-site: same-origin`
                 );
-                MakerWebhooks.makeWebRequest2.setBody('signed_body=SIGNATURE.' + JSON.stringify(
+                MakerWebhooks.makeWebRequest.setBody('signed_body=SIGNATURE.' + JSON.stringify(
                     {
                         publish_mode: "text_post",
                         text_post_app_info: "{\"reply_control\":0}",
@@ -70,16 +64,8 @@ module.exports = function share(
                     }));
             }
 
-            function postToMastodon(content: string) {
-                MakerWebhooks.makeWebRequest1.setUrl(`https://${MASTODON_SERVER}/api/v1/statuses`);
-                MakerWebhooks.makeWebRequest1.setMethod('POST');
-                MakerWebhooks.makeWebRequest1.setContentType('application/json');
-                MakerWebhooks.makeWebRequest1.setAdditionalHeaders(
-                    `Authorization: Bearer ${MASTODON_TOKEN}`
-                );
-                MakerWebhooks.makeWebRequest1.setBody(JSON.stringify({
-                    status: content,
-                }));
+            function shareToMastodon(content: string) {
+                Buffer.addToBuffer3.setMessage(content)
             }
 
             function content(body: string, link: string, tags: string) {
@@ -143,14 +129,12 @@ module.exports = function share(
             }
 
             function debug() {
-                Twitter.postNewTweet.skip();
-                MakerWebhooks.makeWebRequest1.skip();
-                MakerWebhooks.makeWebRequest2.skip();
-                Buffer.addToBuffer.skip();
+                Buffer.addToBuffer1.skip();
+                Buffer.addToBuffer2.skip();
+                Buffer.addToBuffer3.skip();
+                MakerWebhooks.makeWebRequest.skip();
                 Sms.sendMeText.setMessage(`Shared: ${toot()}`);
             }
         }
-    ) ();
-
-}
-;
+    )();
+};

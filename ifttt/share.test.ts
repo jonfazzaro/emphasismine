@@ -5,7 +5,7 @@ describe("The share filter", () => {
         post("", "", "");
         expectToot("");
         expectTweet("");
-        expectThread("");
+        // expectThread("");
         expectNoLinkedInPost();
         expectNoSmsMessage();
     });
@@ -18,7 +18,7 @@ describe("The share filter", () => {
         );
         expectTweet(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn't scale. It's easier to point fingers and claim that people with PM/PO solutions or mu..."\n\nhttps://www.amazon.com #buybuy #getback`);
         expectToot(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn't scale. It's easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum."\n\nhttps://www.amazon.com #buybuy #getback`);
-        expectThread(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn't scale. It's easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum."\n\nhttps://www.amazon.com`);
+        // expectThread(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn't scale. It's easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum."\n\nhttps://www.amazon.com`);
         expectNoLinkedInPost();
         expectNoSmsMessage();
     });
@@ -33,7 +33,7 @@ describe("The share filter", () => {
 
             expectToot(`"Just what do you think you are you doing, Dave?"\n\nhttps://www.hal9000.net/daisy #agility #horsefeathers`);
             expectTweet(`"Just what do you think you are you doing, Dave?"\n\nhttps://www.hal9000.net/daisy #agility #horsefeathers`);
-            expectThread(`"Just what do you think you are you doing, Dave?"\n\nhttps://www.hal9000.net/daisy`);
+            // expectThread(`"Just what do you think you are you doing, Dave?"\n\nhttps://www.hal9000.net/daisy`);
             expectLinkedInPost(`"Just what do you think you are you doing, Dave?"\n\nhttps://www.hal9000.net/daisy #agility #horsefeathers`);
             expectNoSmsMessage();
         });
@@ -64,10 +64,10 @@ describe("The share filter", () => {
         })
 
         it('should not post anywhere', function () {
-            expect(Twitter.postNewTweet.skip).toHaveBeenCalled();
-            expect(MakerWebhooks.makeWebRequest1.skip).toHaveBeenCalled();
-            expect(MakerWebhooks.makeWebRequest2.skip).toHaveBeenCalled();
-            expect(Buffer_.addToBuffer.skip).toHaveBeenCalled();
+            expect(MakerWebhooks.makeWebRequest.skip).toHaveBeenCalled();
+            expect(Buffer_.addToBuffer1.skip).toHaveBeenCalled();
+            expect(Buffer_.addToBuffer2.skip).toHaveBeenCalled();
+            expect(Buffer_.addToBuffer3.skip).toHaveBeenCalled();
         });
 
         it('should send SMS messages', function () {
@@ -82,7 +82,7 @@ describe("The share filter", () => {
 });
 
 const MakerWebhooks = {
-    makeWebRequest1: {
+    makeWebRequest: {
         setUrl: jest.fn(),
         setMethod: jest.fn(),
         setContentType: jest.fn(),
@@ -90,13 +90,8 @@ const MakerWebhooks = {
         setBody: jest.fn(),
         skip: jest.fn()
     },
-    makeWebRequest2: {
-        setUrl: jest.fn(),
-        setMethod: jest.fn(),
-        setContentType: jest.fn(),
-        setAdditionalHeaders: jest.fn(),
-        setBody: jest.fn(),
-        skip: jest.fn()
+    jsonEvent: {
+        JsonPayload: "{}"
     }
 }
 const Twitter = {
@@ -106,7 +101,15 @@ const Twitter = {
     }
 };
 const Buffer_ = {
-    addToBuffer: {
+    addToBuffer1: {
+        setMessage: jest.fn(),
+        skip: jest.fn(),
+    },
+    addToBuffer2: {
+        setMessage: jest.fn(),
+        skip: jest.fn(),
+    },
+    addToBuffer3: {
         setMessage: jest.fn(),
         skip: jest.fn(),
     },
@@ -119,45 +122,37 @@ const Sms = {
 }
 
 function expectLinkedInPost(content: string) {
-    expect(Buffer_.addToBuffer.setMessage).toHaveBeenCalledWith(content);
+    expect(Buffer_.addToBuffer1.setMessage).toHaveBeenCalledWith(content);
 }
 
-function post(body: string, url: string, tags: string) {
+function post(text: string, link: string, tags: string) {
+    input({text, link, tags})
     share(
-        tumblr({body, url, tags}),
-        Twitter, Buffer_, MakerWebhooks, Sms,
-        "hachyderm.io",
-        "t00ts",
+        Buffer_, MakerWebhooks, Sms,
         "zuckU",
-        );
+    );
 }
 
-function debugPost(body: string, url: string, tags: string) {
+function debugPost(text: string, link: string, tags: string) {
+    input({text, link, tags})
     share(
-        tumblr({body, url, tags}),
-        Twitter, Buffer_, MakerWebhooks, Sms,
-        "hachyderm.io",
-        "t00ts",
+        Buffer_, MakerWebhooks, Sms,
         "zuckU",
         true);
 }
 
 function expectToot(toot) {
-    expect(MakerWebhooks.makeWebRequest1.setUrl).toHaveBeenCalledWith("https://hachyderm.io/api/v1/statuses");
-    expect(MakerWebhooks.makeWebRequest1.setMethod).toHaveBeenCalledWith("POST");
-    expect(MakerWebhooks.makeWebRequest1.setContentType).toHaveBeenCalledWith("application/json");
-    expect(MakerWebhooks.makeWebRequest1.setAdditionalHeaders).toHaveBeenCalledWith("Authorization: Bearer t00ts");
-    expect(MakerWebhooks.makeWebRequest1.setBody).toHaveBeenCalledWith(JSON.stringify({status: toot}));
-    expect(MakerWebhooks.makeWebRequest1.skip).not.toHaveBeenCalled()
+    expect(Buffer_.addToBuffer3.setMessage).toHaveBeenCalledWith(toot);
+    expect(Buffer_.addToBuffer3.skip).not.toHaveBeenCalled()
 }
 
 function expectThread(thread) {
-    expect(MakerWebhooks.makeWebRequest2.setUrl).toHaveBeenCalledWith("https://i.instagram.com/api/v1/media/configure_text_only_post/");
-    expect(MakerWebhooks.makeWebRequest2.setMethod).toHaveBeenCalledWith("POST");
-    expect(MakerWebhooks.makeWebRequest2.setContentType).toHaveBeenCalledWith("application/x-www-form-urlencoded; charset=UTF-8");
-    expect(MakerWebhooks.makeWebRequest2.setAdditionalHeaders)
+    expect(MakerWebhooks.makeWebRequest.setUrl).toHaveBeenCalledWith("https://i.instagram.com/api/v1/media/configure_text_only_post/");
+    expect(MakerWebhooks.makeWebRequest.setMethod).toHaveBeenCalledWith("POST");
+    expect(MakerWebhooks.makeWebRequest.setContentType).toHaveBeenCalledWith("application/x-www-form-urlencoded; charset=UTF-8");
+    expect(MakerWebhooks.makeWebRequest.setAdditionalHeaders)
         .toHaveBeenCalledWith("authorization: Bearer IGT:2:zuckU\nuser-agent: Barcelona 289.0.0.77.109 Android\nsec-fetch-site: same-origin");
-    expect(MakerWebhooks.makeWebRequest2.setBody).toHaveBeenCalledWith('signed_body=SIGNATURE.' + JSON.stringify( {
+    expect(MakerWebhooks.makeWebRequest.setBody).toHaveBeenCalledWith('signed_body=SIGNATURE.' + JSON.stringify({
         "publish_mode": "text_post",
         "text_post_app_info": "{\"reply_control\":0}",
         "timezone_offset": "0",
@@ -172,29 +167,29 @@ function expectThread(thread) {
             "android_release": "8.1.0"
         }
     }));
-    expect(MakerWebhooks.makeWebRequest2.skip).not.toHaveBeenCalled()
+    expect(MakerWebhooks.makeWebRequest.skip).not.toHaveBeenCalled()
 }
 
 function expectTweet(tweet) {
-    expect(Twitter.postNewTweet.setTweet).toHaveBeenCalledWith(tweet);
-    expect(Twitter.postNewTweet.skip).not.toHaveBeenCalled()
+    expect(Buffer_.addToBuffer2.setMessage).toHaveBeenCalledWith(tweet);
+    expect(Buffer_.addToBuffer2.skip).not.toHaveBeenCalled()
 }
 
 function expectNoLinkedInPost() {
-    expect(Buffer_.addToBuffer.skip).toHaveBeenCalled();
-    expect(Buffer_.addToBuffer.setMessage).not.toHaveBeenCalled();
+    expect(Buffer_.addToBuffer1.skip).toHaveBeenCalled();
+    expect(Buffer_.addToBuffer1.setMessage).not.toHaveBeenCalled();
 }
 
 function expectNoSmsMessage() {
     expect(Sms.sendMeText.skip).toHaveBeenCalled();
 }
 
-function tumblr({body, url, tags}) {
-    return {
-        newLinkPost: {
-            PostBodyHtml: body,
-            LinkUrl: url,
-            PostTags: tags,
-        },
+function input({text, link, tags}) {
+    MakerWebhooks.jsonEvent = {
+        JsonPayload: JSON.stringify({
+            link,
+            text,
+            tags
+        })
     };
 }
