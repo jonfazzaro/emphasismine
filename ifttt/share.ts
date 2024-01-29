@@ -2,14 +2,13 @@ module.exports = function share(
     Buffer: any,
     MakerWebhooks: any,
     Sms: any,
-    THREADS_TOKEN: string,
-    DEBUG: boolean = false
+    THREADS_TOKEN: string
 ) {
     (function () {
             const IN = "in";
             const input = JSON.parse(MakerWebhooks.jsonEvent.JsonPayload)
 
-            if (DEBUG) return debug();
+            if (input.debug) return debug();
 
             Sms.sendMeText.skip();
             Buffer.addToBuffer2.setMessage(tweet());

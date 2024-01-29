@@ -129,16 +129,14 @@ function post(text: string, link: string, tags: string) {
     input({text, link, tags})
     share(
         Buffer_, MakerWebhooks, Sms,
-        "zuckU",
-    );
+        "zuckU");
 }
 
 function debugPost(text: string, link: string, tags: string) {
-    input({text, link, tags})
+    input({text, link, tags, debug: true})
     share(
         Buffer_, MakerWebhooks, Sms,
-        "zuckU",
-        true);
+        "zuckU");
 }
 
 function expectToot(toot) {
@@ -184,12 +182,8 @@ function expectNoSmsMessage() {
     expect(Sms.sendMeText.skip).toHaveBeenCalled();
 }
 
-function input({text, link, tags}) {
+function input(data) {
     MakerWebhooks.jsonEvent = {
-        JsonPayload: JSON.stringify({
-            link,
-            text,
-            tags
-        })
+        JsonPayload: JSON.stringify(data)
     };
 }
