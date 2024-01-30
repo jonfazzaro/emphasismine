@@ -200,11 +200,13 @@ function arrangeCard(card) {
 }
 
 async function run() {
+    delete process.env.debug;
     await subject(_mocked.context);
 }
 
 async function runDebug() {
-    await subject(_mocked.context, true);
+    process.env.debug = 'true';
+    await subject(_mocked.context);
 }
 
 const _mocked = {
