@@ -137,20 +137,56 @@ describe("The emphasis mine function", () => {
 
         describe("with no URL attachment", () => {
             beforeEach(async () => {
+                metadata.fetch.mockReturnValue(Promise.resolve({image: "https://beatles.pics/ringo"}))
                 tumblr.post.mockClear()
                 _mocked.trello.archive.mockClear()
                 card = {
                     name: "Let me take you down",
-                    desc: "I'm going to Strawberry Fields. #nothingisreal #gethungabout  ",
+                    desc: "I'm going to Strawberry Fields. #nothingisreal #gethungabout http://penny.lane ",
                     attachments: [],
                 };
                 arrangeCard(card);
                 await run();
             });
 
-            it("does not create a post", () => {
-                expect(tumblr.post).not.toHaveBeenCalled()
-                expect(_mocked.trello.archive).not.toHaveBeenCalled();
+
+            it("it extracts the URL from the description", () => {
+                expect(tumblr.post).toHaveBeenCalledWith({
+                    content: [
+                        {
+                            type: "link",
+                            url: "http://penny.lane",
+                            title: "Let me take you down",
+                            poster: [{
+                                url: "https://beatles.pics/ringo",
+                            }],
+                        },
+                        {
+                            type: "text",
+                            text: "I'm going to Strawberry Fields.",
+                        }
+                    ],
+                    tags: ["nothingisreal", "gethungabout"],
+                });
+            });
+
+            describe("and no URL in the description", () => {
+                beforeEach(async () => {
+                    tumblr.post.mockClear()
+                    _mocked.trello.archive.mockClear()
+                    card = {
+                        name: "Let me take you down",
+                        desc: "I'm going to Strawberry Fields. #nothingisreal #gethungabout ",
+                        attachments: [],
+                    };
+                    arrangeCard(card);
+                    await run();
+                });
+
+                it("does not create a post", () => {
+                    expect(tumblr.post).not.toHaveBeenCalled()
+                    expect(_mocked.trello.archive).not.toHaveBeenCalled();
+                });
             });
         });
 

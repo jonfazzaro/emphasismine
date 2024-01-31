@@ -38,7 +38,14 @@ module.exports = async function (context) {
     }
 
     function attachedUrl(card) {
-        return card.attachments[0]?.url || null;
+        return card.attachments[0]?.url
+            || urlFromDescription(card)
+            || null;
+    }
+
+    function urlFromDescription(card) {
+        return new RegExp(httpLink).test(card.desc)
+            && card.desc.match(httpLink)[0];
     }
 
     async function linkPost(card) {
@@ -70,6 +77,7 @@ module.exports = async function (context) {
 
     function description(card) {
         return desc(card)
+            .replace(httpLink, "")
             .replace(hashtagsAtTheEnd, "")
             .replace(hashtags, " $2").trim();
     }
@@ -86,7 +94,6 @@ module.exports = async function (context) {
         return text.replace(/\\#/g, "#");
     }
 
-    // SPIKE
     function fixQuotes(content) {
         return content
             .replace(/[\u201C\u201D]/g, '\"')
@@ -97,3 +104,4 @@ module.exports = async function (context) {
 const hashtags = /(\s|\A)#(\w+)/g;
 const hashtagsAtTheEnd = /(\s|\A)#(\w+)($|\s+#\w+)/g;
 const readReminder = "Read: something interesting";
+const httpLink = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/g
