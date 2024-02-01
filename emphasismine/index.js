@@ -4,6 +4,9 @@ module.exports = async function (context) {
     const tumblr = require("./edge/tumblr");
     const share = require('./edge/share')
 
+    if (!!process.env.debug)
+        console.debug(process.env)
+
     const card = await trello.getNextCard();
     if (card) {
         if (!isReadReminder(card))
