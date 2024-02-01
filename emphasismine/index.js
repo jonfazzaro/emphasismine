@@ -5,7 +5,7 @@ module.exports = async function (context) {
     const share = require('./edge/share')
 
     if (!!process.env.debug)
-        console.debug(process.env)
+        context.log(process.env)
 
     const card = await trello.getNextCard();
     if (card) {
