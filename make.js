@@ -5,6 +5,6 @@ dotenv.config();
 main();
 
 async function main() {
-    await fn(console, true);
+    await fn(console);
 }
 
