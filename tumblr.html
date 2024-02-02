@@ -1055,7 +1055,7 @@ Revised June 25, 2017
             {/block:IfLogoImage}
 
             {block:IfNotLogoImage}
-            <h1><a href="/">{Title}</a></h1>
+            <h1><a href="/"><em>Emphasis</em> Mine</a></h1>
             {/block:IfNotLogoImage}
 
             {block:IfShowDescription}
@@ -1079,17 +1079,19 @@ Revised June 25, 2017
 
             <div class="narrow">
 
-                {block:Title}
-                <div class="title">
-                    <h1>{Title}</h1>
+
+                <div class="caption quote-short">
+                    <script>
+                        document.write(({NPF}).content[1].text)
+                    </script>
                 </div>
-                {/block:Title}
+                <br/>
+                <div class="link-title">
+                    <script>
+                        document.write(`<a href="${({NPF}).content[0].url}">${({NPF}).content[0].title} <span class="link-arrow">&#10132;</span></a>`)
+                    </script>
 
-                <div class="caption">
-
-                    {Body}
-
-                </div> <!-- End caption -->
+                </div>
 
                 {block:More}
                 <div class="more">
@@ -1749,7 +1751,6 @@ Revised June 25, 2017
                     <li><a href="/submit">{SubmitLabel}</a></li>
                     {/block:SubmissionsEnabled}
                     <li><a href="/archive">Archive</a></li>
-                    <li><a rel="me" href="https://hachyderm.io/@fazzaro">Mastodon</a></li>
                 </ul>
             </div>
 
