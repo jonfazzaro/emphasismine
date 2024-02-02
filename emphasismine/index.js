@@ -82,6 +82,7 @@ module.exports = async function (context) {
     function description(card) {
         return desc(card)
             .replace(httpLink, "")
+            .replace(/\[]\( ".*"\)/g, "")
             .replace(hashtagsAtTheEnd, "")
             .replace(hashtags, " $2").trim();
     }

@@ -142,7 +142,7 @@ describe("The emphasis mine function", () => {
                 _mocked.trello.archive.mockClear()
                 card = {
                     name: "Let me take you down",
-                    desc: "I'm going to Strawberry Fields. #nothingisreal #gethungabout http://penny.lane ",
+                    desc: `I'm going to Strawberry Fields. #nothingisreal #gethungabout http://penny.lane [http://penny.lane](http://penny.lane "") `,
                     attachments: [],
                 };
                 arrangeCard(card);
