@@ -31,10 +31,14 @@ module.exports = async function (context) {
             link: card.url,
             text: description(card),
             tags: tags(card).join(','),
-            ...(!!process.env.debug) && { debug: true }
+            ...isDebug() && { debug: true }
         })
 
         await trello.archive(card);
+    }
+
+    function isDebug() {
+        return process.env.debug === 'true';
     }
 
     function attachedUrl(card) {
