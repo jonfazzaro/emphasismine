@@ -82,7 +82,7 @@ module.exports = async function (context) {
     function description(card) {
         return desc(card)
             .replace(httpLink, "")
-            .replace(/\[]\( ".*"\)/g, "")
+            .replace(markdownLinkDetritus, "")
             .replace(hashtagsAtTheEnd, "")
             .replace(hashtags, " $2").trim();
     }
@@ -110,3 +110,4 @@ const hashtags = /(\s|\A)#(\w+)/g;
 const hashtagsAtTheEnd = /(\s|\A)#(\w+)($|\s+#\w+)/g;
 const readReminder = "Read: something interesting";
 const httpLink = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/g
+const markdownLinkDetritus = /\[]\( ".*"\)/g;
