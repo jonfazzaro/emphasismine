@@ -48,8 +48,8 @@ module.exports = async function (context) {
     }
 
     function urlFromDescription(card) {
-        return new RegExp(httpLink).test(card.desc)
-            && card.desc.match(httpLink)[0];
+        return new RegExp(markdownUrl).test(card.desc)
+            && card.desc.match(markdownUrl).groups.url
     }
 
     async function linkPost(card) {
@@ -81,8 +81,8 @@ module.exports = async function (context) {
 
     function description(card) {
         return desc(card)
+            .replace(markdownUrl, "")
             .replace(httpLink, "")
-            .replace(markdownLinkDetritus, "")
             .replace(hashtagsAtTheEnd, "")
             .replace(hashtags, " $2").trim();
     }
@@ -106,8 +106,9 @@ module.exports = async function (context) {
     }
 };
 
+const readReminder = "Read: something interesting";
+
 const hashtags = /(\s|\A)#(\w+)/g;
 const hashtagsAtTheEnd = /(\s|\A)#(\w+)($|\s+#\w+)/g;
-const readReminder = "Read: something interesting";
-const httpLink = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/g
-const markdownLinkDetritus = /\[]\( ".*"\)/g;
+const httpLink = /\b(https?:\/\/[^\s/$.?#].\S*)\b/g
+const markdownUrl = /\[([^\]]*)]\(((?<url>https?:\/\/[^)]+) ".*"\))/

@@ -136,13 +136,14 @@ describe("The emphasis mine function", () => {
         });
 
         describe("with no URL attachment", () => {
+            const url = `https://medium.com/the-liberators/agile-is-dead--5e7590466611`;
             beforeEach(async () => {
                 metadata.fetch.mockReturnValue(Promise.resolve({image: "https://beatles.pics/ringo"}))
                 tumblr.post.mockClear()
                 _mocked.trello.archive.mockClear()
                 card = {
                     name: "Let me take you down",
-                    desc: `I'm going to Strawberry Fields. #nothingisreal #gethungabout http://penny.lane [http://penny.lane](http://penny.lane "") `,
+                    desc: `I'm going to Strawberry Fields. #nothingisreal #gethungabout ${url} [${url}](${url} "") `,
                     attachments: [],
                 };
                 arrangeCard(card);
@@ -155,7 +156,7 @@ describe("The emphasis mine function", () => {
                     content: [
                         {
                             type: "link",
-                            url: "http://penny.lane",
+                            url,
                             title: "Let me take you down",
                             poster: [{
                                 url: "https://beatles.pics/ringo",
