@@ -9,6 +9,9 @@ module.exports = {
             appId: process.env.threadsAppId,
         });
 
+        if (process.env.debug === 'true')
+            return
+
         await client.posts.create(process.env.threadsUserId, {contents: params.content})
             .catch(e => console.log(e))
     }
