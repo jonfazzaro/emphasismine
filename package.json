@@ -15,7 +15,7 @@
     "browser": "^0.2.6",
     "cheerio": "^1.0.0-rc.12",
     "node-fetch": "^2.6.1",
-    "tumblr.js": "^4.0.1"
+    "tumblr.js": "^5.0.0"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",
