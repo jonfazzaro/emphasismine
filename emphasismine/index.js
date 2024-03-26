@@ -82,9 +82,9 @@ module.exports = async function (context) {
     function description(card) {
         return desc(card)
             .replace(markdownUrl, "")
-            .replace(httpLink, "")
+            .replace(httpLink, "").trim()
             .replace(hashtagsAtTheEnd, "")
-            .replace(hashtags, " $2").trim();
+            .replace(hashtags, " $2").trim()
     }
 
     function tags(card) {
@@ -109,6 +109,6 @@ module.exports = async function (context) {
 const readReminder = "Read: something interesting";
 
 const hashtags = /(\s|\A)#(\w+)/g;
-const hashtagsAtTheEnd = /(\s|\A)#(\w+)($|\s+#\w+)/g;
+const hashtagsAtTheEnd = /(\s|\\)#(\w+)($|\s+#\w+)/g;
 const httpLink = /\b(https?:\/\/[^\s/$.?#].\S*)\b/g
 const markdownUrl = /\[([^\]]*)]\(((?<url>https?:\/\/[^)]+) ".*"\))/

@@ -151,7 +151,7 @@ describe("The emphasis mine function", () => {
             });
 
 
-            it("it extracts the URL from the description", () => {
+            it("extracts the URL from the description", () => {
                 expect(tumblr.post).toHaveBeenCalledWith({
                     content: [
                         {
@@ -168,6 +168,48 @@ describe("The emphasis mine function", () => {
                         }
                     ],
                     tags: ["nothingisreal", "gethungabout"],
+                });
+            });
+
+            describe('and space after the last hashtag', () => {
+                const desc = `"But over the last quarter-century or so, the idea of disruption has also metastasized into a sort of cult, the credo of which holds that everything is to be disrupted, all the time, and that if you’re not changing everything, you’re losing."
+
+\\#in #disrupt #change #layoffs #movefastandbreakthings
+
+[https://www.nytimes.com/2024/03/21/opinion/tech-layoffs-silicon-valley.html](https://www.nytimes.com/2024/03/21/opinion/tech-layoffs-silicon-valley.html "‌")`
+
+                beforeEach(async () => {
+                    metadata.fetch.mockReturnValue(Promise.resolve({image: "https://static01.nyt.com/images/2024/03/24/opinion/21goodall/21goodall-superJumbo.jpg?quality=75&auto=webp"}))
+                    tumblr.post.mockClear()
+                    _mocked.trello.archive.mockClear()
+                    card = {
+                        name: "Opinion | Mass Tech Layoffs? Just Another Day in the Corporate Blender.",
+                        desc,
+                        attachments: [],
+                    };
+                    arrangeCard(card);
+                    await run();
+                });
+
+                it('does not repeat the last tag after the quote', () => {
+                    expect(tumblr.post).toHaveBeenCalledWith({
+                        content: [
+                            {
+                                type: "link",
+                                url: "https://www.nytimes.com/2024/03/21/opinion/tech-layoffs-silicon-valley.html",
+                                title: "Opinion | Mass Tech Layoffs? Just Another Day in the Corporate Blender.",
+                                poster: [{
+                                    url: "https://static01.nyt.com/images/2024/03/24/opinion/21goodall/21goodall-superJumbo.jpg?quality=75&auto=webp",
+                                }],
+                            },
+                            {
+                                type: "text",
+                                text: `"But over the last quarter-century or so, the idea of disruption has also metastasized into a sort of cult, the credo of which holds that everything is to be disrupted, all the time, and that if you're not changing everything, you're losing."`,
+                            }
+                        ],
+                        tags: ["in", "disrupt", "change", "layoffs", "movefastandbreakthings"],
+                    });
+
                 });
             });
 
