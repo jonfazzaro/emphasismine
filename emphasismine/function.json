@@ -5,6 +5,16 @@
       "type": "timerTrigger",
       "direction": "in",
       "schedule": "0 0 6 * * *"
+    },
+    {
+      "authLevel": "function",
+      "name": "req",
+      "type": "httpTrigger",
+      "direction": "in",
+      "methods": [
+        "get",
+        "post"
+      ]
     }
   ]
 }
