@@ -7,7 +7,7 @@
       "schedule": "0 0 6 * * *"
     },
     {
-      "authLevel": "function",
+      "authLevel": "Anonymous",
       "name": "req",
       "type": "httpTrigger",
       "direction": "in",
