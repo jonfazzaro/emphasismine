@@ -1,5 +1,4 @@
 {
-  "scriptFile": "../emphasismine/index.js",
   "bindings": [
     {
       "authLevel": "function",
