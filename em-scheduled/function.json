@@ -1,4 +1,5 @@
 {
+  "scriptFile": "../emphasismine/index.js",
   "bindings": [
     {
       "name": "scheduled",
