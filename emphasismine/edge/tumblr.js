@@ -10,6 +10,9 @@ module.exports = {
             token_secret: process.env.tumblrTokenSecret,
         });
 
+        if (process.env.tumblr === 'false')
+            return Promise.resolve();
+
         await client.createPost(process.env.tumblrBlogname, {
             ...params,
             state: process.env.postState
