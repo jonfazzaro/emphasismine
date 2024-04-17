@@ -1,7 +1,8 @@
 {
+  "scriptFile": "../index.js",
   "bindings": [
     {
-      "name": "schedule",
+      "name": "scheduled",
       "type": "timerTrigger",
       "direction": "in",
       "schedule": "0 0 6 * * *"

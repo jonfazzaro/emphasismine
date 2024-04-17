@@ -1,12 +1,11 @@
 {
-  "scriptFile": "../emphasismine/index.js",
-  "entryPoint": "default",
+  "scriptFile": "../index.js",
   "bindings": [
     {
       "authLevel": "function",
       "type": "httpTrigger",
       "direction": "in",
-      "name": "req",
+      "name": "onDemand",
       "methods": [
         "get",
         "post"
