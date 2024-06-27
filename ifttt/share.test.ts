@@ -3,9 +3,8 @@ const share = require("./share");
 describe("The share filter", () => {
     it("given nothing returns nothing", () => {
         post("", "", "");
-        expectToot("");
         expectTweet("");
-        // expectThread("");
+        expectThread("");
         expectNoLinkedInPost();
         expectNoSmsMessage();
     });
@@ -17,8 +16,7 @@ describe("The share filter", () => {
             "buy buy,get back"
         );
         expectTweet(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn't scale. It's easier to point fingers and claim that people with PM/PO solutions or mu..."\n\nhttps://www.amazon.com #buybuy #getback`);
-        expectToot(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn't scale. It's easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum."\n\nhttps://www.amazon.com #buybuy #getback`);
-        // expectThread(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn't scale. It's easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum."\n\nhttps://www.amazon.com`);
+        expectThread(`"Unfortunately, the Scrum community seems unwilling to inspect and adapt. It clings to a Product Owner ideal that is rarely used in practice and doesn't scale. It's easier to point fingers and claim that people with PM/PO solutions or multiple POs per product are not doing Scrum."\n\nhttps://www.amazon.com`);
         expectNoLinkedInPost();
         expectNoSmsMessage();
     });
@@ -31,9 +29,8 @@ describe("The share filter", () => {
                 "agility,in,horse feathers"
             );
 
-            expectToot(`"Just what do you think you are you doing, Dave?"\n\nhttps://www.hal9000.net/daisy #agility #horsefeathers`);
             expectTweet(`"Just what do you think you are you doing, Dave?"\n\nhttps://www.hal9000.net/daisy #agility #horsefeathers`);
-            // expectThread(`"Just what do you think you are you doing, Dave?"\n\nhttps://www.hal9000.net/daisy`);
+            expectThread(`"Just what do you think you are you doing, Dave?"\n\nhttps://www.hal9000.net/daisy`);
             expectLinkedInPost(`"Just what do you think you are you doing, Dave?"\n\nhttps://www.hal9000.net/daisy #agility #horsefeathers`);
             expectNoSmsMessage();
         });
@@ -64,10 +61,9 @@ describe("The share filter", () => {
         })
 
         it('should not post anywhere', function () {
-            expect(MakerWebhooks.makeWebRequest.skip).toHaveBeenCalled();
             expect(Buffer_.addToBuffer1.skip).toHaveBeenCalled();
             expect(Buffer_.addToBuffer2.skip).toHaveBeenCalled();
-            expect(Buffer_.addToBuffer3.skip).toHaveBeenCalled();
+            expect(Buffer_.addToBuffer4.skip).toHaveBeenCalled();
         });
 
         it('should send SMS messages', function () {
@@ -113,6 +109,10 @@ const Buffer_ = {
         setMessage: jest.fn(),
         skip: jest.fn(),
     },
+    addToBuffer4: {
+        setMessage: jest.fn(),
+        skip: jest.fn(),
+    },
 };
 const Sms = {
     sendMeText: {
@@ -145,27 +145,8 @@ function expectToot(toot) {
 }
 
 function expectThread(thread) {
-    expect(MakerWebhooks.makeWebRequest.setUrl).toHaveBeenCalledWith("https://i.instagram.com/api/v1/media/configure_text_only_post/");
-    expect(MakerWebhooks.makeWebRequest.setMethod).toHaveBeenCalledWith("POST");
-    expect(MakerWebhooks.makeWebRequest.setContentType).toHaveBeenCalledWith("application/x-www-form-urlencoded; charset=UTF-8");
-    expect(MakerWebhooks.makeWebRequest.setAdditionalHeaders)
-        .toHaveBeenCalledWith("authorization: Bearer IGT:2:zuckU\nuser-agent: Barcelona 289.0.0.77.109 Android\nsec-fetch-site: same-origin");
-    expect(MakerWebhooks.makeWebRequest.setBody).toHaveBeenCalledWith('signed_body=SIGNATURE.' + JSON.stringify({
-        "publish_mode": "text_post",
-        "text_post_app_info": "{\"reply_control\":0}",
-        "timezone_offset": "0",
-        "source_type": "4",
-        "_uid": "9945584",
-        "device_id": "1o03hiy9f9280000",
-        "caption": thread,
-        "device": {
-            "manufacturer": "OnePlus",
-            "model": "ONEPLUS+A3003",
-            "android_version": 26,
-            "android_release": "8.1.0"
-        }
-    }));
-    expect(MakerWebhooks.makeWebRequest.skip).not.toHaveBeenCalled()
+    expect(Buffer_.addToBuffer4.setMessage).toHaveBeenCalledWith(thread);
+    expect(Buffer_.addToBuffer4.skip).not.toHaveBeenCalled()
 }
 
 function expectTweet(tweet) {

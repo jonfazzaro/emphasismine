@@ -1,5 +1,5 @@
 const axios = require('axios');
-const threads = require("./threads");
+const mastodon = require("./mastodon");
 
 module.exports = {
     post: async (params) => {
@@ -9,8 +9,6 @@ module.exports = {
             },
         });
 
-        await threads.post({
-            content: `${params.text}\n\n${params.link}`
-        })
+        await mastodon.post(params)
     }
 }
