@@ -37,7 +37,7 @@ module.exports = function share(
             }
 
             function shareToThreads(content: string) {
-                Buffer.addToBuffer4.setMessage(content)
+                Buffer.addToBuffer3.setMessage(content)
             }
 
             function content(body: string, link: string, tags: string) {
@@ -103,7 +103,7 @@ module.exports = function share(
             function debug() {
                 Buffer.addToBuffer1.skip();
                 Buffer.addToBuffer2.skip();
-                Buffer.addToBuffer4.skip();
+                Buffer.addToBuffer3.skip();
                 Sms.sendMeText.setMessage(`Shared: ${toot()}`);
             }
         }

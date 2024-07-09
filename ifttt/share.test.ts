@@ -63,7 +63,7 @@ describe("The share filter", () => {
         it('should not post anywhere', function () {
             expect(Buffer_.addToBuffer1.skip).toHaveBeenCalled();
             expect(Buffer_.addToBuffer2.skip).toHaveBeenCalled();
-            expect(Buffer_.addToBuffer4.skip).toHaveBeenCalled();
+            expect(Buffer_.addToBuffer3.skip).toHaveBeenCalled();
         });
 
         it('should send SMS messages', function () {
@@ -109,10 +109,6 @@ const Buffer_ = {
         setMessage: jest.fn(),
         skip: jest.fn(),
     },
-    addToBuffer4: {
-        setMessage: jest.fn(),
-        skip: jest.fn(),
-    },
 };
 const Sms = {
     sendMeText: {
@@ -145,8 +141,8 @@ function expectToot(toot) {
 }
 
 function expectThread(thread) {
-    expect(Buffer_.addToBuffer4.setMessage).toHaveBeenCalledWith(thread);
-    expect(Buffer_.addToBuffer4.skip).not.toHaveBeenCalled()
+    expect(Buffer_.addToBuffer3.setMessage).toHaveBeenCalledWith(thread);
+    expect(Buffer_.addToBuffer3.skip).not.toHaveBeenCalled()
 }
 
 function expectTweet(tweet) {
