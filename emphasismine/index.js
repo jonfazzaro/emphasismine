@@ -4,6 +4,9 @@ module.exports = async function (context) {
     const tumblr = require("./edge/tumblr");
     const share = require('./edge/share')
 
+    if (context.asLibrary)
+        return { postToBlog }
+
     const card = await trello.getNextCard();
     if (card) {
         if (!isReadReminder(card))
@@ -21,12 +24,16 @@ module.exports = async function (context) {
             ]);
     }
 
+    async function postToBlog(card, date = null) {
+        await tumblr.post(await linkPost(card, date));
+    }
+
     async function postFrom(card) {
         card.url = attachedUrl(card);
         if (!card.url)
             return
 
-        await tumblr.post(await linkPost(card));
+        await postToBlog(card);
         await share.post({
             link: card.url,
             text: description(card),
@@ -52,10 +59,11 @@ module.exports = async function (context) {
             && card.desc.match(markdownUrl).groups.url
     }
 
-    async function linkPost(card) {
+    async function linkPost(card, date) {
         const meta = await metadata.fetch(card.url);
 
         return {
+            ...date && {date},
             content: [
                 {
                     type: "link",
