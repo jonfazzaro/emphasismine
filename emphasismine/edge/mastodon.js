@@ -16,7 +16,15 @@ module.exports = {
                 "Authorization": `Bearer ${MASTODON_TOKEN}`
             }
         })
-    }
+    },
+    get: async (path = `api/v1/statuses`) => {
+        return await axios.get(`https://${MASTODON_SERVER}/${path}`, {
+            headers: {
+                "content-type": "application/json",
+                "Authorization": `Bearer ${MASTODON_TOKEN}`
+            }
+        })
+    },
 }
 
 function status(params) {
