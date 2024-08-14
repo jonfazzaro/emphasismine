@@ -13,18 +13,11 @@ async function main() {
 
     const posts = response.data.statuses.filter(s => !!s.card).map(status => ({
         name: status.card.title,
-        desc: desc(status),
+        desc: content(status.content),
+        tags: status.tags.map(t => t.name),
         url: status.card.url,
         date: status.created_at
     }));
-
-    function desc(status) {
-        const p = content(status.content)
-        if (!status.tags.length)
-            return p
-
-        return `${p} \\${status.tags.map(t => `#${t.name}`).join(', ')}`;
-    }
 
     function content(content) {
         const firstParagraph = content.split("</p>")[0].replace(/^<p>/, '');

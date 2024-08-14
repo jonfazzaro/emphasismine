@@ -96,6 +96,7 @@ module.exports = async function (context) {
     }
 
     function tags(card) {
+        if (card.tags) return card.tags
         return [...desc(card).matchAll(hashtags)].map(m => m[2])
     }
 
