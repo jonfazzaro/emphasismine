@@ -1,27 +1,22 @@
 const cheerio = require("cheerio");
-const browser = require("browser");
 
-module.exports = { fetch };
+module.exports = { fetch: fetchMetadata };
 
-async function fetch(url) {
-  return new Promise((resolve, reject) => {
-    browser.browse(url, (e, response) => {
-      if (e) reject(e);
-      resolve(parse(response));
-    });
-  });
+async function fetchMetadata(url) {
+  const response = await fetch(url)
+  const html = await response.text()
+  return parse(html, url)
 }
 
-function parse(response) {
-  const html = response.result;
+function parse(html, url) {
   if (!html)
     return {
-      url: response.url
+      url
     };
 
   const $ = cheerio.load(html);
   return {
-    url: og($, "url") || response.url,
+    url: og($, "url") || url,
     title: og($, "title") || $("head title").text(),
     description: og($, "description"),
     image: og($, "image"),
