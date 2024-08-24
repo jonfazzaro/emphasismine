@@ -1,40 +1,47 @@
 const axios = require('axios');
 
-const MASTODON_SERVER = process.env.mastodonUrl
-const MASTODON_TOKEN = process.env.mastodonToken
-
 module.exports = {
-    post: async (params) => {
-        if (process.env.debug === 'true')
-            return
+    post,
+    get,
+    status
+}
 
-        await axios.post(`https://${MASTODON_SERVER}/api/v1/statuses`, JSON.stringify({
-            status: status(params)
-        }), {
-            headers: {
-                "content-type": "application/json",
-                "Authorization": `Bearer ${MASTODON_TOKEN}`
-            }
-        })
-    },
-    get: async (path = `api/v1/statuses`) => {
-        return await axios.get(`https://${MASTODON_SERVER}/${path}`, {
-            headers: {
-                "content-type": "application/json",
-                "Authorization": `Bearer ${MASTODON_TOKEN}`
-            }
-        })
-    },
+async function post(params) {
+    if (process.env.debug === 'true') return
+
+    await axios.post(`https://${MASTODON_SERVER}/api/v1/statuses`, JSON.stringify({
+        status: status(params)
+    }), {
+        headers
+    })
 }
 
 function status(params) {
-    return `${params.text}\n\n${(tags(params))}\n\n${params.link}`;
+    return `${params.text}\n\n${(hash(params.tags))}${params.link}`;
 }
 
-function tags(params) {
-    return params.tags
-        .split(',')
-        .map(t => `#${t}`)
-        .filter(t => t !== '#in')
-        .join(' ');
+function hash(tags) {
+    if (!tags.trim()) return '';
+
+    return tags
+            .split(',')
+            .filter((t) => t !== "in")
+            .map((t) => '#' + t.replace(/\s/g, ''))
+            .join(' ') +
+        "\n\n";
 }
+
+async function get(path = `api/v1/statuses`) {
+    return await axios.get(`https://${MASTODON_SERVER}/${path}`, {
+        headers
+    })
+}
+
+const MASTODON_SERVER = process.env.mastodonUrl
+
+const MASTODON_TOKEN = process.env.mastodonToken
+
+const headers = {
+    "content-type": "application/json",
+    "Authorization": `Bearer ${MASTODON_TOKEN}`
+};
