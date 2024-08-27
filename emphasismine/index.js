@@ -26,17 +26,23 @@ module.exports = async function (context) {
     }
 
     async function postToBlog(card, date = null) {
-        await blog.post(card, date);
+        const postData = {
+            url: cardParser.attachedUrl(card),
+            title: card.name,
+            description: cardParser.description(card),
+            tags: cardParser.tags(card)
+        };
+        await blog.post(postData, date);
     }
 
     async function postFrom(card) {
-        card.url = cardParser.attachedUrl(card);
-        if (!card.url)
+        const url = cardParser.attachedUrl(card);
+        if (!url)
             return
 
         await postToBlog(card);
         await share.post({
-            link: card.url,
+            link: url,
             text: cardParser.description(card),
             tags: cardParser.tags(card).join(','),
             ...isDebug() && { debug: true }
