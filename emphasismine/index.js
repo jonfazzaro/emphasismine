@@ -1,6 +1,6 @@
 const trello = require("./edge/trello");
 const share = require('./edge/share');
-const cardParser = require('./cardParser');
+const cards = require('./cards');
 const blog = require('./blog');
 
 const readReminder = "Read: something interesting";
@@ -14,7 +14,7 @@ module.exports = async function (context) {
     const card = await trelloClient.getNextCard();
     if (card) {
         if (!isReadReminder(card))
-            await postFrom(card);
+            await post(card);
     } else await remindMeToRead();
 
     function isReadReminder(card) {
@@ -25,30 +25,33 @@ module.exports = async function (context) {
         await trelloClient.createCard(readReminder, null, null, [trelloClient.labels.deep]);
     }
 
-    async function postToBlog(card, date = null) {
-        const postData = {
-            url: cardParser.attachedUrl(card),
-            title: card.name,
-            description: cardParser.description(card),
-            tags: cardParser.tags(card)
-        };
-        await blog.post(postData, date);
-    }
-
-    async function postFrom(card) {
-        const url = cardParser.attachedUrl(card);
+    async function post(card) {
+        const url = cards.attachedUrl(card);
         if (!url)
             return
 
         await postToBlog(card);
         await share.post({
             link: url,
-            text: cardParser.description(card),
-            tags: cardParser.tags(card).join(','),
+            text: cards.description(card),
+            tags: cards.tags(card).join(','),
             ...isDebug() && { debug: true }
         })
 
         await trelloClient.archive(card);
+    }
+
+    async function postToBlog(card, date = null) {
+        await blog.post(from(card), date);
+    }
+
+    function from(card) {
+        return {
+            url: cards.attachedUrl(card),
+            title: card.name,
+            description: cards.description(card),
+            tags: cards.tags(card)
+        };
     }
 
     function isDebug() {
