@@ -43,10 +43,7 @@ function fixQuotes(content) {
 
 module.exports = {
     attachedUrl,
-    urlFromDescription,
     description,
     tags,
     desc,
-    unescapeHash,
-    fixQuotes
 };
