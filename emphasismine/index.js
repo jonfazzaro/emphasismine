@@ -1,13 +1,18 @@
+const trello = require("./edge/trello");
+const metadata = require("./edge/openGraph");
+const tumblr = require("./edge/tumblr");
+const share = require('./edge/share');
+const cardParser = require('./cardParser');
+
+const readReminder = "Read: something interesting";
+
 module.exports = async function (context) {
-    const trello = require("./edge/trello")(context);
-    const metadata = require("./edge/openGraph");
-    const tumblr = require("./edge/tumblr");
-    const share = require('./edge/share')
+    const trelloClient = trello(context);
 
     if (context.asLibrary)
         return { postToBlog }
 
-    const card = await trello.getNextCard();
+    const card = await trelloClient.getNextCard();
     if (card) {
         if (!isReadReminder(card))
             await postFrom(card);
@@ -18,10 +23,7 @@ module.exports = async function (context) {
     }
 
     async function remindMeToRead() {
-        await trello.createCard(readReminder, null, null,
-            [
-                trello.labels.deep
-            ]);
+        await trelloClient.createCard(readReminder, null, null, [trelloClient.labels.deep]);
     }
 
     async function postToBlog(card, date = null) {
@@ -29,34 +31,23 @@ module.exports = async function (context) {
     }
 
     async function postFrom(card) {
-        card.url = attachedUrl(card);
+        card.url = cardParser.attachedUrl(card);
         if (!card.url)
             return
 
         await postToBlog(card);
         await share.post({
             link: card.url,
-            text: description(card),
-            tags: tags(card).join(','),
+            text: cardParser.description(card),
+            tags: cardParser.tags(card).join(','),
             ...isDebug() && { debug: true }
         })
 
-        await trello.archive(card);
+        await trelloClient.archive(card);
     }
 
     function isDebug() {
         return process.env.debug === 'true';
-    }
-
-    function attachedUrl(card) {
-        return card.attachments[0]?.url
-            || urlFromDescription(card)
-            || null;
-    }
-
-    function urlFromDescription(card) {
-        return new RegExp(markdownUrl).test(card.desc)
-            && card.desc.match(markdownUrl).groups.url
     }
 
     async function linkPost(card, date) {
@@ -73,12 +64,11 @@ module.exports = async function (context) {
                 },
                 {
                     type: "text",
-                    text: description(card),
+                    text: cardParser.description(card),
                 }
             ],
-            tags: tags(card),
+            tags: cardParser.tags(card),
         };
-
     }
 
     function isMetaImageValid(meta) {
@@ -86,38 +76,4 @@ module.exports = async function (context) {
             && !!meta.image
             && meta.image.startsWith("http")
     }
-
-    function description(card) {
-        return desc(card)
-            .replace(markdownUrl, "")
-            .replace(httpLink, "").trim()
-            .replace(hashtagsAtTheEnd, "")
-            .replace(hashtags, " $2").trim()
-    }
-
-    function tags(card) {
-        if (card.tags) return card.tags
-        return [...desc(card).matchAll(hashtags)].map(m => m[2])
-    }
-
-    function desc(card) {
-        return fixQuotes(unescapeHash(card.desc));
-    }
-
-    function unescapeHash(text) {
-        return text.replace(/\\#/g, "#");
-    }
-
-    function fixQuotes(content) {
-        return content
-            .replace(/[\u201C\u201D]/g, '\"')
-            .replace(/[\u2018\u2019]/g, '\'')
-    }
 };
-
-const readReminder = "Read: something interesting";
-
-const hashtags = /(\s|\A)#(\w+)/g;
-const hashtagsAtTheEnd = /(\s|\\)#(\w+)($|\s+#\w+)/g;
-const httpLink = /\b(https?:\/\/[^\s/$.?#].\S*)\b/g
-const markdownUrl = /\[([^\]]*)]\(((?<url>https?:\/\/[^)]+) ".*"\))/
