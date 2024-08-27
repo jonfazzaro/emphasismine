@@ -1,31 +1,30 @@
 const metadata = require("./edge/openGraph");
 const tumblr = require("./edge/tumblr");
-const cardParser = require('./cardParser');
 
 module.exports = {
-    post: async function(card, date = null) {
-        await tumblr.post(await linkPost(card, date));
+    post: async function(postData, date = null) {
+        await tumblr.post(await linkPost(postData, date));
     }
 };
 
-async function linkPost(card, date) {
-    const meta = await metadata.fetch(card.url);
+async function linkPost(postData, date) {
+    const meta = await metadata.fetch(postData.url);
 
     return {
         ...date && {date},
         content: [
             {
                 type: "link",
-                url: card.url,
-                title: card.name,
+                url: postData.url,
+                title: postData.title,
                 ...(isMetaImageValid(meta)) && { poster: [{url: meta.image}] }
             },
             {
                 type: "text",
-                text: cardParser.description(card),
+                text: postData.description,
             }
         ],
-        tags: cardParser.tags(card),
+        tags: postData.tags,
     };
 }
 
