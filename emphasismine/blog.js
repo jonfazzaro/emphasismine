@@ -9,6 +9,7 @@ module.exports = {
 
 async function linkPost(postData, date) {
     const meta = await metadata.fetch(postData.url);
+    console.log(meta)
 
     return {
         ...date && {date},
@@ -17,7 +18,7 @@ async function linkPost(postData, date) {
                 type: "link",
                 url: postData.url,
                 title: postData.title,
-                ...(isMetaImageValid(meta)) && { poster: [{url: meta.image}] }
+                ...(isMetaImageValid(meta)) && { poster: [{url: encodeURI(meta.image)}] }
             },
             {
                 type: "text",

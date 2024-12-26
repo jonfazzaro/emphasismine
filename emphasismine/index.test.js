@@ -77,7 +77,7 @@ describe("The emphasis mine function", () => {
 
         it('shares to socials', () => {
             expect(share.post).toHaveBeenCalledWith({
-                link:"http://penny.lane" ,
+                link: "http://penny.lane",
                 text: "\"Of ev\'ry head he\'s had the pleasure to know\"",
                 tags: "head,come,go"
             })
@@ -88,7 +88,7 @@ describe("The emphasis mine function", () => {
                 await runDebug();
                 expect(share.post).toHaveBeenCalledWith({
                     debug: true,
-                    link:"http://penny.lane" ,
+                    link: "http://penny.lane",
                     text: "\"Of ev\'ry head he\'s had the pleasure to know\"",
                     tags: "head,come,go"
                 })
@@ -133,6 +133,27 @@ describe("The emphasis mine function", () => {
             });
 
             expectLinkPostWithoutPoster();
+        });
+
+        describe('with a metadata image with special characters', () => {
+            it("encodes the URL", async () => {
+                const funkyUrl = "https://lede-admin.defector.com/wp-content/uploads/sites/28/2024/12/Screenshot-2024-12-08-at-12.46.55 PM-e1733847416397.jpg";
+                metadata.fetch.mockReturnValue(Promise.resolve({image: funkyUrl}))
+                tumblr.post.mockClear()
+                _mocked.trello.archive.mockClear()
+                arrangeCard(card);
+                await run();
+
+                expect(tumblr.post).toHaveBeenCalledWith(expect.objectContaining({
+                    content: expect.arrayContaining([
+                        expect.objectContaining({
+                            poster: [{
+                                url: encodeURI(funkyUrl)
+                            }],
+                        }),
+                    ]),
+                }))
+            });
         });
 
         describe("with no URL attachment", () => {

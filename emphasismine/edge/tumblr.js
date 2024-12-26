@@ -8,11 +8,6 @@ module.exports = {
             state: process.env.postState
         };
 
-        if (process.env.tumblr === 'false') {
-            console.log(request)
-            return Promise.resolve();
-        }
-
         const client = tumblr.createClient({
             consumer_key: process.env.tumblrConsumerKey,
             consumer_secret: process.env.tumblrConsumerSecret,
