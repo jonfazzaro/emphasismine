@@ -102,8 +102,6 @@ describe("The emphasis mine function", () => {
         describe('with no metadata', () => {
             beforeEach(async () => {
                 metadata.fetch.mockReturnValue(Promise.resolve(null))
-                tumblr.post.mockClear()
-                _mocked.trello.archive.mockClear()
                 arrangeCard(card);
                 await run();
             });
@@ -111,78 +109,71 @@ describe("The emphasis mine function", () => {
             expectLinkPostWithoutPoster();
         });
 
-        describe('with no metadata image', () => {
-            beforeEach(async () => {
-                metadata.fetch.mockReturnValue(Promise.resolve({}))
-                tumblr.post.mockClear()
-                _mocked.trello.archive.mockClear()
-                arrangeCard(card);
-                await run();
+        describe('with metadata', () => {
+
+            describe('with no image', () => {
+                beforeEach(async () => {
+                    metadata.fetch.mockReturnValue(Promise.resolve({}))
+                    arrangeCard(card);
+                    await run();
+                });
+
+                expectLinkPostWithoutPoster();
             });
 
-            expectLinkPostWithoutPoster();
-        });
+            describe('with an incomplete image', () => {
+                beforeEach(async () => {
+                    metadata.fetch.mockReturnValue(Promise.resolve({image: "/rel/path/to/img"}))
+                    arrangeCard(card);
+                    await run();
+                });
 
-        describe('with an incomplete metadata image', () => {
-            beforeEach(async () => {
-                metadata.fetch.mockReturnValue(Promise.resolve({image: "/rel/path/to/img"}))
-                tumblr.post.mockClear()
-                _mocked.trello.archive.mockClear()
-                arrangeCard(card);
-                await run();
+                expectLinkPostWithoutPoster();
             });
 
-            expectLinkPostWithoutPoster();
-        });
+            describe('with an image with special characters', () => {
+                it("encodes the URL", async () => {
+                    const funkyUrl = "https://lede-admin.defector.com/wp-content/uploads/sites/28/2024/12/Screenshot-2024-12-08-at-12.46.55 PM-e1733847416397.jpg";
+                    metadata.fetch.mockReturnValue(Promise.resolve({image: funkyUrl}))
+                    arrangeCard(card);
+                    await run();
 
-        describe('with a metadata image with special characters', () => {
-            it("encodes the URL", async () => {
-                const funkyUrl = "https://lede-admin.defector.com/wp-content/uploads/sites/28/2024/12/Screenshot-2024-12-08-at-12.46.55 PM-e1733847416397.jpg";
-                metadata.fetch.mockReturnValue(Promise.resolve({image: funkyUrl}))
-                tumblr.post.mockClear()
-                _mocked.trello.archive.mockClear()
-                arrangeCard(card);
-                await run();
-
-                expect(tumblr.post).toHaveBeenCalledWith(expect.objectContaining({
-                    content: expect.arrayContaining([
-                        expect.objectContaining({
-                            poster: [{
-                                url: encodeURI(funkyUrl)
-                            }],
-                        }),
-                    ]),
-                }))
+                    expect(tumblr.post).toHaveBeenCalledWith(expect.objectContaining({
+                        content: expect.arrayContaining([
+                            expect.objectContaining({
+                                poster: [{
+                                    url: encodeURI(funkyUrl)
+                                }],
+                            }),
+                        ]),
+                    }))
+                });
             });
-        });
 
-        describe('with a metadata image that has already been encoded', () => {
-            it("encodes the URL", async () => {
-                const encodedURL = "https://diginomica.com/sites/default/files/images/2020-02/Merici%20pic.jpg";
-                metadata.fetch.mockReturnValue(Promise.resolve({image: encodedURL}))
-                tumblr.post.mockClear()
-                _mocked.trello.archive.mockClear()
-                arrangeCard(card);
-                await run();
+            describe('with an image that has already been encoded', () => {
+                it("encodes the URL", async () => {
+                    const encodedURL = "https://diginomica.com/sites/default/files/images/2020-02/Merici%20pic.jpg";
+                    metadata.fetch.mockReturnValue(Promise.resolve({image: encodedURL}))
+                    arrangeCard(card);
+                    await run();
 
-                expect(tumblr.post).toHaveBeenCalledWith(expect.objectContaining({
-                    content: expect.arrayContaining([
-                        expect.objectContaining({
-                            poster: [{
-                                url: encodedURL
-                            }],
-                        }),
-                    ]),
-                }))
+                    expect(tumblr.post).toHaveBeenCalledWith(expect.objectContaining({
+                        content: expect.arrayContaining([
+                            expect.objectContaining({
+                                poster: [{
+                                    url: encodedURL
+                                }],
+                            }),
+                        ]),
+                    }))
+                });
             });
-        });
+        })
 
         describe("with no URL attachment", () => {
             const url = `https://medium.com/the-liberators/agile-is-dead--5e7590466611`;
             beforeEach(async () => {
                 metadata.fetch.mockReturnValue(Promise.resolve({image: "https://beatles.pics/ringo"}))
-                tumblr.post.mockClear()
-                _mocked.trello.archive.mockClear()
                 card = {
                     name: "Let me take you down",
                     desc: `I'm going to Strawberry Fields. #nothingisreal #gethungabout ${url} [${url}](${url} "") `,
@@ -222,8 +213,6 @@ describe("The emphasis mine function", () => {
 
                 beforeEach(async () => {
                     metadata.fetch.mockReturnValue(Promise.resolve({image: "https://static01.nyt.com/images/2024/03/24/opinion/21goodall/21goodall-superJumbo.jpg?quality=75&auto=webp"}))
-                    tumblr.post.mockClear()
-                    _mocked.trello.archive.mockClear()
                     card = {
                         name: "Opinion | Mass Tech Layoffs? Just Another Day in the Corporate Blender.",
                         desc,
@@ -257,8 +246,6 @@ describe("The emphasis mine function", () => {
 
             describe("and no URL in the description", () => {
                 beforeEach(async () => {
-                    tumblr.post.mockClear()
-                    _mocked.trello.archive.mockClear()
                     card = {
                         name: "Let me take you down",
                         desc: "I'm going to Strawberry Fields. #nothingisreal #gethungabout ",
@@ -277,8 +264,6 @@ describe("The emphasis mine function", () => {
 
         describe("that is a reminder to read", () => {
             beforeEach(async () => {
-                tumblr.post.mockClear()
-                _mocked.trello.archive.mockClear()
                 _mocked.trello.createCard.mockClear();
                 arrangeCard({name: "Read: something interesting"});
                 await run();
@@ -322,6 +307,8 @@ function arrangeCard(card) {
 
 async function run() {
     process.env.debug = 'false';
+    tumblr.post.mockClear()
+    _mocked.trello.archive.mockClear()
     await subject(_mocked.context);
 }
 
