@@ -156,6 +156,27 @@ describe("The emphasis mine function", () => {
             });
         });
 
+        describe('with a metadata image that has already been encoded', () => {
+            it("encodes the URL", async () => {
+                const encodedURL = "https://diginomica.com/sites/default/files/images/2020-02/Merici%20pic.jpg";
+                metadata.fetch.mockReturnValue(Promise.resolve({image: encodedURL}))
+                tumblr.post.mockClear()
+                _mocked.trello.archive.mockClear()
+                arrangeCard(card);
+                await run();
+
+                expect(tumblr.post).toHaveBeenCalledWith(expect.objectContaining({
+                    content: expect.arrayContaining([
+                        expect.objectContaining({
+                            poster: [{
+                                url: encodedURL
+                            }],
+                        }),
+                    ]),
+                }))
+            });
+        });
+
         describe("with no URL attachment", () => {
             const url = `https://medium.com/the-liberators/agile-is-dead--5e7590466611`;
             beforeEach(async () => {
