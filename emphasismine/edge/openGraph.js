@@ -30,8 +30,8 @@ async function ogImage($) {
 
 async function imageIsValid(url) {
     try {
-        await fetch(url)
-        return true
+        const response = await fetch(url)
+        return response.headers.get("content-type").startsWith("image/");
     } catch (e) {
         return false;
     }
