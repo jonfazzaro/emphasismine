@@ -1,7 +1,7 @@
 const tumblr = require("tumblr.js");
 
-module.exports = {
-    post: async (params) => {
+module.exports = class TumblrBlog {
+    async post (params) {
 
         const request = {
             ...params,
@@ -17,4 +17,4 @@ module.exports = {
 
         await client.createPost(process.env.tumblrBlogname, request)
     }
-};
+}
