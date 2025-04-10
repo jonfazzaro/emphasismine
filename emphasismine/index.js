@@ -1,11 +1,11 @@
 const trello = require("./edge/trello");
 const share = require('./edge/share');
 const cards = require('./cards');
-const blog = require('./blog');
+const Blogger = require('./blog');
 
 const readReminder = "Read: something interesting";
 
-module.exports = async function (context) {
+module.exports = async function (context, blogger = new Blogger()) {
     const trelloClient = trello(context);
 
     if (context.asLibrary)
@@ -42,7 +42,7 @@ module.exports = async function (context) {
     }
 
     async function postToBlog(card, date = null) {
-        await blog.post(from(card), date);
+        await blogger.post(from(card), date);
     }
 
     function from(card) {

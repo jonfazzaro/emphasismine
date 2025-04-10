@@ -1,12 +1,18 @@
 const Tumblr= require("tumblr.js");
 
 module.exports = class TumblrBlog {
+    
+    get lastPost() {
+        return this._lastPost
+    }
+    
     constructor(tumblr = Tumblr) {
-        this.tumblr = tumblr 
+        this._tumblr = tumblr 
+        this._lastPost = null
     }
     
     static createNull() {
-        return new TumblrBlog(NullTumblr)
+        return new TumblrBlog(new NullTumblr())
     }
     
     async post (params) {
@@ -16,7 +22,7 @@ module.exports = class TumblrBlog {
             state: process.env.postState
         };
 
-        const client = Tumblr.createClient({
+        const client = this._tumblr.createClient({
             consumer_key: process.env.tumblrConsumerKey,
             consumer_secret: process.env.tumblrConsumerSecret,
             token: process.env.tumblrToken,
@@ -24,6 +30,10 @@ module.exports = class TumblrBlog {
         });
 
         await client.createPost(process.env.tumblrBlogname, request)
+        this._lastPost = {
+            blogName: process.env.tumblrBlogname,
+            request
+        }
     }
 }
 

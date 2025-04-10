@@ -1,19 +1,21 @@
 jest.mock("./edge/trello");
-jest.mock("./edge/TumblrBlog");
+// jest.mock("./edge/TumblrBlog");
 jest.mock("./edge/share");
 jest.mock("./edge/openGraph");
 
 const trello = require("./edge/trello");
-const tumblr = require("./edge/TumblrBlog");
+const TumblrBlog = require("./edge/TumblrBlog");
+const Blogger = require("./blog");
 const share = require("./edge/share");
 const metadata = require("./edge/openGraph");
 
 const subject = require("./index");
+let tumblr;
 
 describe("The emphasis mine function", () => {
     beforeEach(() => {
         trello.mockReturnValue(_mocked.trello);
-        tumblr.post = jest.fn(() => Promise.resolve());
+        tumblr = TumblrBlog.createNull();
         share.post = jest.fn(() => Promise.resolve());
     });
 
@@ -23,7 +25,7 @@ describe("The emphasis mine function", () => {
         });
 
         it("does not post anything", () => {
-            expect(tumblr.post).not.toHaveBeenCalled();
+            expect(tumblr.lastPost).toBeNull();
         });
 
         it("creates a card to remind me to read something interesting", () => {
@@ -56,7 +58,7 @@ describe("The emphasis mine function", () => {
         });
 
         it("posts to Tumblr", () => {
-            expect(tumblr.post).toHaveBeenCalledWith({
+            expect(tumblr.lastPost.request).toEqual({
                 content: [
                     {
                         type: "link",
@@ -138,7 +140,7 @@ describe("The emphasis mine function", () => {
                     arrangeCard(card);
                     await run();
 
-                    expect(tumblr.post).toHaveBeenCalledWith(expect.objectContaining({
+                    expect(tumblr.lastPost.request).toEqual(expect.objectContaining({
                         content: expect.arrayContaining([
                             expect.objectContaining({
                                 poster: [{
@@ -157,7 +159,7 @@ describe("The emphasis mine function", () => {
                     arrangeCard(card);
                     await run();
 
-                    expect(tumblr.post).toHaveBeenCalledWith(expect.objectContaining({
+                    expect(tumblr.lastPost.request).toEqual(expect.objectContaining({
                         content: expect.arrayContaining([
                             expect.objectContaining({
                                 poster: [{
@@ -185,7 +187,7 @@ describe("The emphasis mine function", () => {
 
 
             it("extracts the URL from the description", () => {
-                expect(tumblr.post).toHaveBeenCalledWith({
+                expect(tumblr.lastPost.request).toEqual({
                     content: [
                         {
                             type: "link",
@@ -223,7 +225,7 @@ describe("The emphasis mine function", () => {
                 });
 
                 it('does not repeat the last tag after the quote', () => {
-                    expect(tumblr.post).toHaveBeenCalledWith({
+                    expect(tumblr.lastPost.request).toEqual({
                         content: [
                             {
                                 type: "link",
@@ -252,11 +254,12 @@ describe("The emphasis mine function", () => {
                         attachments: [],
                     };
                     arrangeCard(card);
+                    tumblr = TumblrBlog.createNull();
                     await run();
                 });
 
                 it("does not create a post", () => {
-                    expect(tumblr.post).not.toHaveBeenCalled()
+                    expect(tumblr.lastPost).toBeNull()
                     expect(_mocked.trello.archive).not.toHaveBeenCalled();
                 });
             });
@@ -265,12 +268,13 @@ describe("The emphasis mine function", () => {
         describe("that is a reminder to read", () => {
             beforeEach(async () => {
                 _mocked.trello.createCard.mockClear();
+                tumblr = TumblrBlog.createNull();
                 arrangeCard({name: "Read: something interesting"});
                 await run();
             });
 
             it("does not post anything", () => {
-                expect(tumblr.post).not.toHaveBeenCalled();
+                expect(tumblr.lastPost).toBeNull();
             });
 
             it("does not add another read reminder card", () => {
@@ -281,7 +285,7 @@ describe("The emphasis mine function", () => {
         function expectLinkPostWithoutPoster() {
             it("creates a link post without a poster", () => {
                 expect(metadata.fetch).toHaveBeenCalledWith("http://penny.lane");
-                expect(tumblr.post).toHaveBeenCalledWith({
+                expect(tumblr.lastPost.request).toEqual({
                     content: [
                         {
                             type: "link",
@@ -307,14 +311,13 @@ function arrangeCard(card) {
 
 async function run() {
     process.env.debug = 'false';
-    tumblr.post.mockClear()
     _mocked.trello.archive.mockClear()
-    await subject(_mocked.context);
+    await subject(_mocked.context, new Blogger(tumblr));
 }
 
 async function runDebug() {
     process.env.debug = 'true';
-    await subject(_mocked.context);
+    await subject(_mocked.context, TumblrBlog.createNull());
 }
 
 const _mocked = {
