@@ -1,6 +1,6 @@
 const fetch = require("node-fetch");
 
-function trello(context) {
+function trello() {
   return { createCard, getNextCard, archive, labels };
 
   async function createCard(name, desc, due, labels) {
@@ -53,7 +53,7 @@ function trello(context) {
       headers: headers(),
       method: method,
       body: body ? JSON.stringify(body) : null,
-    }).catch(err => context.log(err));
+    })
 
     return await response.json();
   }

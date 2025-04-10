@@ -8,7 +8,7 @@ const Blogger = require("./Blogger");
 const share = require("./edge/share");
 const metadata = require("./edge/openGraph");
 
-const subject = require("./index");
+const EmphasisMine = require("./EmphasisMine");
 let tumblr;
 
 describe("The emphasis mine function", () => {
@@ -324,7 +324,7 @@ async function runDebug() {
 }
 
 async function runFunction() {
-    await subject(_mocked.context, new Blogger(tumblr));
+    await new EmphasisMine(_mocked.trello, new Blogger(tumblr), share).run();
 }
 
 const _mocked = {
