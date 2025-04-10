@@ -1,11 +1,10 @@
 jest.mock("./edge/trello");
-// jest.mock("./edge/TumblrBlog");
 jest.mock("./edge/share");
 jest.mock("./edge/openGraph");
 
 const trello = require("./edge/trello");
 const TumblrBlog = require("./edge/TumblrBlog");
-const Blogger = require("./blog");
+const Blogger = require("./Blogger");
 const share = require("./edge/share");
 const metadata = require("./edge/openGraph");
 
@@ -15,7 +14,7 @@ let tumblr;
 describe("The emphasis mine function", () => {
     beforeEach(() => {
         trello.mockReturnValue(_mocked.trello);
-        tumblr = TumblrBlog.createNull();
+        arrangeTumblrBlog()
         share.post = jest.fn(() => Promise.resolve());
     });
 
@@ -254,7 +253,7 @@ describe("The emphasis mine function", () => {
                         attachments: [],
                     };
                     arrangeCard(card);
-                    tumblr = TumblrBlog.createNull();
+                    arrangeTumblrBlog();
                     await run();
                 });
 
@@ -268,7 +267,7 @@ describe("The emphasis mine function", () => {
         describe("that is a reminder to read", () => {
             beforeEach(async () => {
                 _mocked.trello.createCard.mockClear();
-                tumblr = TumblrBlog.createNull();
+                arrangeTumblrBlog()
                 arrangeCard({name: "Read: something interesting"});
                 await run();
             });
@@ -305,6 +304,10 @@ describe("The emphasis mine function", () => {
     });
 });
 
+function arrangeTumblrBlog() {
+    tumblr = TumblrBlog.createNull()
+}
+
 function arrangeCard(card) {
     _mocked.trello.getNextCard.mockReturnValue(Promise.resolve(card));
 }
@@ -312,12 +315,16 @@ function arrangeCard(card) {
 async function run() {
     process.env.debug = 'false';
     _mocked.trello.archive.mockClear()
-    await subject(_mocked.context, new Blogger(tumblr));
+    await runFunction();
 }
 
 async function runDebug() {
     process.env.debug = 'true';
-    await subject(_mocked.context, TumblrBlog.createNull());
+    await runFunction();
+}
+
+async function runFunction() {
+    await subject(_mocked.context, new Blogger(tumblr));
 }
 
 const _mocked = {

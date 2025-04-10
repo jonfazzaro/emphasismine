@@ -1,7 +1,7 @@
 const trello = require("./edge/trello");
 const share = require('./edge/share');
 const cards = require('./cards');
-const Blogger = require('./blog');
+const Blogger = require('./Blogger');
 
 const readReminder = "Read: something interesting";
 
