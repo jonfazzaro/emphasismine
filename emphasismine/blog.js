@@ -1,9 +1,9 @@
 const metadata = require("./edge/openGraph");
-const tumblr = require("./edge/tumblr");
+const TumblrBlog = require("./edge/TumblrBlog");
 
 module.exports = {
     post: async function(postData, date = null) {
-        await tumblr.post(await linkPost(postData, date));
+        await TumblrBlog.post(await linkPost(postData, date));
     }
 };
 

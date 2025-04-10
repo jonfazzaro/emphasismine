@@ -1,10 +1,10 @@
 jest.mock("./edge/trello");
-jest.mock("./edge/tumblr");
+jest.mock("./edge/TumblrBlog");
 jest.mock("./edge/share");
 jest.mock("./edge/openGraph");
 
 const trello = require("./edge/trello");
-const tumblr = require("./edge/tumblr");
+const tumblr = require("./edge/TumblrBlog");
 const share = require("./edge/share");
 const metadata = require("./edge/openGraph");
 
