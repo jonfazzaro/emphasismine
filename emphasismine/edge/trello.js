@@ -1,11 +1,11 @@
 const fetch = require("node-fetch");
 
 function trello() {
-  return {createCard, getNextCard, getClassicCard, archive, labels};
+  return {createCard, getNextCard, getClassicCard, archive, restore, labels};
 
   async function createCard(name, desc, due, labels) {
     return await post("https://api.trello.com/1/cards", {
-      idList: process.env.trelloListID,
+      idList: process.env.trelloInboxListID,
       name: name,
       desc: desc,
       due: due,
@@ -17,6 +17,15 @@ function trello() {
     const cardId = card?.id;
     return await put(`https://api.trello.com/1/cards/${cardId}`, {
       closed: true,
+    });
+  }
+
+  async function restore(card) {
+    const cardId = card?.id;
+    return await put(`https://api.trello.com/1/cards/${cardId}`, {
+      idList: process.env.trelloInboxListID,
+      closed: false,
+      desc: card.desc
     });
   }
 

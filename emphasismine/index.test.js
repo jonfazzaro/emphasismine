@@ -19,7 +19,12 @@ describe("The emphasis mine function", () => {
     });
 
     describe("given no cards in the list", () => {
+        let classicCard = {
+            desc: "what the h"
+        };
+
         beforeEach(async () => {
+            arrangeClassicCard(classicCard)
             await run();
         });
 
@@ -31,6 +36,11 @@ describe("The emphasis mine function", () => {
             expect(_mocked.trello.createCard)
                 .toHaveBeenCalledWith(readReminder, null, null,
                     [_mocked.trello.labels.deep]);
+        });
+
+        it('restores a classic card to the inbox', () => {
+            expect(classicCard.desc).toEqual("what the h #classic")
+            expect(_mocked.trello.restore).toHaveBeenCalledWith(classicCard)
         });
     });
 
@@ -312,6 +322,10 @@ function arrangeCard(card) {
     _mocked.trello.getNextCard.mockReturnValue(Promise.resolve(card));
 }
 
+function arrangeClassicCard(card) {
+    _mocked.trello.getClassicCard.mockReturnValue(Promise.resolve(card));
+}
+
 async function run() {
     process.env.debug = 'false';
     _mocked.trello.archive.mockClear()
@@ -333,8 +347,10 @@ const _mocked = {
     },
     trello: {
         getNextCard: jest.fn(() => Promise.resolve(null)),
+        getClassicCard: jest.fn(() => Promise.resolve(null)),
         createCard: jest.fn(() => Promise.resolve(null)),
         archive: jest.fn(() => Promise.resolve(null)),
+        restore: jest.fn(() => Promise.resolve(null)),
         itsAMock: true,
         labels: {
             deep: "912834759pqu3iorh",

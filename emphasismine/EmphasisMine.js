@@ -6,58 +6,73 @@ const trello = require("./edge/trello");
 const readReminder = "Read: something interesting";
 
 module.exports = class EmphasisMine {
-    constructor(trelloClient = trello(), blogger = new Blogger(), share = share) {
-        this.trelloClient = trelloClient;
-        this.blogger = blogger;
-        this.share = share;
+  constructor(trelloClient = trello(), blogger = new Blogger(), share = share) {
+    this.trelloClient = trelloClient;
+    this.blogger = blogger;
+    this.share = share;
+  }
+
+  async run() {
+    const card = await this.trelloClient.getNextCard();
+    if (card) {
+      if (!this.isReadReminder(card))
+        await this.post(card);
+    } else {
+      await this.remindMeToRead();
+      await this.suggestClassicPost();
     }
+  }
 
-    async run() {
-        const card = await this.trelloClient.getNextCard();
-        if (card) {
-            if (!this.isReadReminder(card))
-                await this.post(card);
-        } else await this.remindMeToRead();
-    }
+  async suggestClassicPost() {
+    const card = await this.trelloClient.getClassicCard();
+    this.tag(card, 'classic');
+    await this.trelloClient.restore(card);
+  }
 
-    isReadReminder(card) {
-        return card.name === readReminder;
-    }
+  tag(card, tag) {
+    const formattedTag = ` #${tag}`;
+    if (!card.desc.includes(formattedTag))
+      card.desc += formattedTag;
+  }
 
-    async remindMeToRead() {
-        await this.trelloClient.createCard(readReminder, null, null, [this.trelloClient.labels.deep]);
-    }
+  isReadReminder(card) {
+    return card.name === readReminder;
+  }
 
-    async post(card) {
-        const url = cards.attachedUrl(card);
-        if (!url)
-            return
+  async remindMeToRead() {
+    await this.trelloClient.createCard(readReminder, null, null, [this.trelloClient.labels.deep]);
+  }
 
-        await this.postToBlog(card);
-        await share.post({
-            link: url,
-            text: cards.description(card),
-            tags: cards.tags(card).join(','),
-            ...this.isDebug() && {debug: true}
-        })
+  async post(card) {
+    const url = cards.attachedUrl(card);
+    if (!url)
+      return
 
-        await this.trelloClient.archive(card);
-    }
+    await this.postToBlog(card);
+    await share.post({
+      link: url,
+      text: cards.description(card),
+      tags: cards.tags(card).join(','),
+      ...this.isDebug() && {debug: true}
+    })
 
-    async postToBlog(card, date = null) {
-        await this.blogger.post(this.from(card), date);
-    }
+    await this.trelloClient.archive(card);
+  }
 
-    from(card) {
-        return {
-            url: cards.attachedUrl(card),
-            title: card.name,
-            description: cards.description(card),
-            tags: cards.tags(card)
-        };
-    }
+  async postToBlog(card, date = null) {
+    await this.blogger.post(this.from(card), date);
+  }
 
-    isDebug() {
-        return process.env.debug === 'true';
-    }
+  from(card) {
+    return {
+      url: cards.attachedUrl(card),
+      title: card.name,
+      description: cards.description(card),
+      tags: cards.tags(card)
+    };
+  }
+
+  isDebug() {
+    return process.env.debug === 'true';
+  }
 }
