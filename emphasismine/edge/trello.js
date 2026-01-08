@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 
 function trello() {
-  return { createCard, getNextCard, archive, labels };
+  return {createCard, getNextCard, getClassicCard, archive, labels};
 
   async function createCard(name, desc, due, labels) {
     return await post("https://api.trello.com/1/cards", {
@@ -36,6 +36,13 @@ function trello() {
     return top;
   }
 
+  async function getClassicCard() {
+    const query = `board:"Work" list:"Emphasis Mine" -list:"Emphasis Mine Inbox" -edited:1000 is:archived`
+    const result = await get(`https://api.trello.com/1/search?query=${query}`);
+
+    return random(result.cards);
+  }
+
   async function get(url) {
     return await call("GET", url);
   }
@@ -56,6 +63,10 @@ function trello() {
     })
 
     return await response.json();
+  }
+
+  function random(cards) {
+    return cards[Math.random() * cards.length | 0] || null;
   }
 
   function headers() {
