@@ -1,4 +1,4 @@
-const share = require('./edge/share');
+const Share = require('./edge/share');
 const cards = require('./cards');
 const Blogger = require('./Blogger');
 const trello = require("./edge/trello");
@@ -6,7 +6,7 @@ const trello = require("./edge/trello");
 const readReminder = "Read: something interesting";
 
 module.exports = class EmphasisMine {
-  constructor(trelloClient = trello(), blogger = new Blogger(), share = share) {
+  constructor(trelloClient = trello(), blogger = new Blogger(), share = Share) {
     this.trelloClient = trelloClient;
     this.blogger = blogger;
     this.share = share;
@@ -14,13 +14,19 @@ module.exports = class EmphasisMine {
 
   async run() {
     const card = await this.trelloClient.getNextCard();
-    if (card) {
-      if (!this.isReadReminder(card))
-        await this.post(card);
-    } else {
-      await this.remindMeToRead();
-      await this.suggestClassicPost();
-    }
+    if (!card) return this.nothingToSeeHere();
+
+    await this.publish(card);
+  }
+
+  async nothingToSeeHere() {
+    await this.remindMeToRead();
+    await this.suggestClassicPost();
+  }
+
+  async publish(card) {
+    if (!this.isReadReminder(card))
+      await this.post(card);
   }
 
   async suggestClassicPost() {
@@ -49,7 +55,7 @@ module.exports = class EmphasisMine {
       return
 
     await this.postToBlog(card);
-    await share.post({
+    await this.share.post({
       link: url,
       text: cards.description(card),
       tags: cards.tags(card).join(','),
