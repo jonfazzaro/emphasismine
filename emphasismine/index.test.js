@@ -162,8 +162,8 @@ describe("The emphasis mine function", () => {
             });
 
             describe('with an image that has already been encoded', () => {
-                it("encodes the URL", async () => {
-                    const encodedURL = "https://diginomica.com/sites/default/files/images/2020-02/Merici%20pic.jpg";
+                it("does not double-encode the URL", async () => {
+                    const encodedURL = "https://diginomica.com/sites/default/files/images/2020-02/Merici%20%25pic.jpg";
                     metadata.fetch.mockReturnValue(Promise.resolve({image: encodedURL}))
                     arrangeCard(card);
                     await run();

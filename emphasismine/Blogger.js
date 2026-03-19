@@ -38,8 +38,12 @@ function isMetaImageValid(meta) {
         && meta.image.startsWith("http")
 }
 
+function isAlreadyEncoded(imageUrl) {
+    return imageUrl !== decodeURI(imageUrl);
+}
+
 function encodeImageUrl(imageUrl) {
-    if (imageUrl.includes("%20")) 
+    if (isAlreadyEncoded(imageUrl))
         return imageUrl;
     return encodeURI(imageUrl);
 }
