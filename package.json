@@ -10,7 +10,7 @@
     "make": "node make.js"
   },
   "dependencies": {
-    "axios": "^1.13.5",
+    "axios": "^1.15.0",
     "cheerio": "^1.2.0",
     "he": "^1.2.0",
     "node-fetch": "^2.6.1",
