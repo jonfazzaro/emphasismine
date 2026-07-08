@@ -61,9 +61,9 @@ describe("The share filter", () => {
         })
 
         it('should not post anywhere', function () {
-            expect(Buffer_.addToBuffer1.skip).toHaveBeenCalled();
-            expect(Buffer_.addToBuffer2.skip).toHaveBeenCalled();
-            expect(Buffer_.addToBuffer3.skip).toHaveBeenCalled();
+            expect(Buffer_.addPostToQueue1.skip).toHaveBeenCalled();
+            expect(Buffer_.addPostToQueue2.skip).toHaveBeenCalled();
+            expect(Buffer_.addPostToQueue3.skip).toHaveBeenCalled();
         });
 
         it('should send SMS messages', function () {
@@ -97,16 +97,16 @@ const Twitter = {
     }
 };
 const Buffer_ = {
-    addToBuffer1: {
-        setMessage: jest.fn(),
+    addPostToQueue1: {
+        setPostText: jest.fn(),
         skip: jest.fn(),
     },
-    addToBuffer2: {
-        setMessage: jest.fn(),
+    addPostToQueue2: {
+        setPostText: jest.fn(),
         skip: jest.fn(),
     },
-    addToBuffer3: {
-        setMessage: jest.fn(),
+    addPostToQueue3: {
+        setPostText: jest.fn(),
         skip: jest.fn(),
     },
 };
@@ -118,7 +118,7 @@ const Sms = {
 }
 
 function expectLinkedInPost(content: string) {
-    expect(Buffer_.addToBuffer1.setMessage).toHaveBeenCalledWith(content);
+    expect(Buffer_.addPostToQueue1.setPostText).toHaveBeenCalledWith(content);
 }
 
 function post(text: string, link: string, tags: string) {
@@ -136,23 +136,23 @@ function debugPost(text: string, link: string, tags: string) {
 }
 
 function expectToot(toot) {
-    expect(Buffer_.addToBuffer3.setMessage).toHaveBeenCalledWith(toot);
-    expect(Buffer_.addToBuffer3.skip).not.toHaveBeenCalled()
+    expect(Buffer_.addPostToQueue3.setPostText).toHaveBeenCalledWith(toot);
+    expect(Buffer_.addPostToQueue3.skip).not.toHaveBeenCalled()
 }
 
 function expectThread(thread) {
-    expect(Buffer_.addToBuffer3.setMessage).toHaveBeenCalledWith(thread);
-    expect(Buffer_.addToBuffer3.skip).not.toHaveBeenCalled()
+    expect(Buffer_.addPostToQueue3.setPostText).toHaveBeenCalledWith(thread);
+    expect(Buffer_.addPostToQueue3.skip).not.toHaveBeenCalled()
 }
 
 function expectTweet(tweet) {
-    expect(Buffer_.addToBuffer2.setMessage).toHaveBeenCalledWith(tweet);
-    expect(Buffer_.addToBuffer2.skip).not.toHaveBeenCalled()
+    expect(Buffer_.addPostToQueue2.setPostText).toHaveBeenCalledWith(tweet);
+    expect(Buffer_.addPostToQueue2.skip).not.toHaveBeenCalled()
 }
 
 function expectNoLinkedInPost() {
-    expect(Buffer_.addToBuffer1.skip).toHaveBeenCalled();
-    expect(Buffer_.addToBuffer1.setMessage).not.toHaveBeenCalled();
+    expect(Buffer_.addPostToQueue1.skip).toHaveBeenCalled();
+    expect(Buffer_.addPostToQueue1.setPostText).not.toHaveBeenCalled();
 }
 
 function expectNoSmsMessage() {
