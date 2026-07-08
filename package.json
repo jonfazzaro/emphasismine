@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "start": "func start",
-    "test": "npx jest",
+    "spec": "npx jest",
+    "test": "spec",
     "tdd": "npx jest --watchAll",
     "tcr": "npx nodemon -e js -x \"npx jest && git add -A && git commit -m 'wip'\"",
     "make": "node make.js"
