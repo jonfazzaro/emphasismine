@@ -104,6 +104,14 @@ describe("The emphasis mine function", () => {
                     tags: "head,come,go"
                 })
             });
+
+            it('leaves the Trello card unarchived', async () => {
+                _mocked.trello.archive.mockClear();
+
+                await runDebug();
+
+                expect(_mocked.trello.archive).not.toHaveBeenCalled();
+            });
         });
 
         it('archives the Trello card', () => {

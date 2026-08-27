@@ -62,7 +62,8 @@ module.exports = class EmphasisMine {
       ...this.isDebug() && {debug: true}
     })
 
-    await this.trelloClient.archive(card);
+    if (!this.isDebug())
+      await this.trelloClient.archive(card);
   }
 
   async postToBlog(card, date = null) {
